@@ -1,13 +1,39 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>patient-disease</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+</head>
+<body>
+    <div class="form">
+        <h1>Login</h1>
+        <form id="login"> <!--handel in JS-->
+            <div>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+                <i class='bx bxs-user'></i>
+            </div>
+            <div>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+                <i class='bx bxs-lock-alt'></i>
+            </div>
+            <div id="login-error" style="color:#fbb; min-height:1.25rem;"></div>
+            <div>
+                <button type="submit">Login</button>
+            </div>
+
+            <div class="newUser">
+                <p>New user? <a href="createAcc.html">Create account</a> </p>
+            </div>
+        </form>
+    </div>
+
+<script type="module" src="/src/login.js"></script>
+      
+</body>
 </html>
