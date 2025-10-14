@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:5000'; // Flask dev server
+const API_BASE = import.meta.env?.VITE_API_BASE ||'http://localhost:5000'; // Flask dev server
  
 //send HTTP request in Flask
 document.getElementById('login').addEventListener('submit', async (e) => {

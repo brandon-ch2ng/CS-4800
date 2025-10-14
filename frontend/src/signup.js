@@ -1,5 +1,5 @@
 // public/js/signup.js
-const API_BASE = 'http://localhost:5000'; // '' if the HTML is served by Flask itself
+const API_BASE = import.meta.env?.VITE_API_BASE ||'http://localhost:5000'; // '' if the HTML is served by Flask itself
 
 function setText(el, text) {
   if (!el) return;
