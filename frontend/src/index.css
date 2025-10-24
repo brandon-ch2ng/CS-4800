@@ -1,68 +1,176 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+    background: url(images/background.jpg) center / cover no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+.form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    color: white;
+    font-family: 'Courier New', Courier, monospace;
+    width: 550px;
+    height: 550px;
+    border-radius: 10px;
+    border: 1px solid whitesmoke;
+    background: transparent;
+    backdrop-filter: blur(10px);
+}
+.login{
+    font-size: 50px;
+}
+
+.field_one{
+    font-size: 22px;
+}
+
+/* BOTH */
+label { 
+   display: block;
+   text-align: right;
+   width: 70px;
+   margin: 0px 7px;
+   text-align: left;
+}
+
+input[type=text], input[type=password], input[type=email] {
+   margin: 10px 5px;
+   box-sizing: border-box;
+   width: 350px;
+   height: 40px;
+   padding: 5px;
+   border: 1px solid #aaa;
+   border-radius: 15px;
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+   display: block;
+   text-align: center;
+   background-color: rgb(24, 161, 252);
+   color: white;
+   margin: 20px auto;
+   border: none;
+   border-radius: 6px;
+   cursor: pointer;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.login_button{
+   width: 200px;
+   height: 40px;
+   font-size: 18px;
 }
+
+button:hover {
+    background-color: lightskyblue; 
+    width: 155px;
+    height: 40px;
+}
+
+.helper {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.helper a{
+    color: lightblue;
+}
+
+
+/* Create Account */
+.formSignup {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    color: white;
+    font-family: 'Courier New', Courier, monospace;
+    width: 600px;
+    height: 600px;
+    border-radius: 10px;
+    border: 1px solid whitesmoke;
+    background: transparent;
+    backdrop-filter: blur(10px);
+}
+
+i {
+    font-size: 19px;
+    color: white;
+}
+
+label {
+   display: block;
+   width: 150px;
+   margin: 0px 7px;
+}
+
+.formSignup input[type=text], .formSignup input[type=password], .formSignup input[type=email]{
+   margin: 10px 5px;
+   box-sizing: border-box;
+   width: 100%;
+   height: 35px;
+   padding: 5px;
+   border: 1px solid #aaa;
+   border-radius: 15px;
+}
+
+.create_button{
+   width: 150px;
+   height: 40px;
+   font-size: 15px;
+}
+
+.name-pair {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    gap: 12px;  
+}
+
+.name-pair input[type=text] {
+    width: 250px;
+}
+
+.additionalInfo {
+    display: flex; 
+} 
+.choice select, .age input[type=number] { 
+    width: 100px; 
+    height: 30px; 
+    border-radius: 15px; 
+    margin: 10px 5px; 
+    box-sizing: border-box; 
+    cursor: pointer; 
+}
+
+.field input, .field select{
+    border-radius: 6px;
+}
+
+.existingUser {
+    font-size: 15px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.existingUser a {
+    color: lightblue;
+}
+
+input.invalid { border-color:#e33; outline:2px solid rgba(227,51,51,.25); }
+
+#error {
+    font-family: monospace;
+    font-size: 10px;
+    background-color: white;
+    color: red;
+    font-weight: bold;
+    width: 95%;
+    margin-left: 5px;
+} 
