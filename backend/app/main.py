@@ -14,7 +14,19 @@ load_dotenv()
 def create_app():
     app = Flask(__name__)
     app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET")
-    CORS(app)
+    CORS(
+        app,
+        resources={r"/*": {"origins": [
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+        ]}},
+        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allow_headers=["Content-Type", "Authorization"],
+        expose_headers=["Content-Type"],
+        supports_credentials=False,  # True only if use cookies
+        max_age=3600,
+    )
+
     JWTManager(app)
 
     # Register Blueprints (route groups)
