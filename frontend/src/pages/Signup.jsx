@@ -148,12 +148,10 @@ export default function Signup() {
         <fieldset className="additionalInfo">
           <legend>Additional info</legend>
 
-          <div className="field">
+          {/* <div className="field">
             <label htmlFor="gender">Gender</label>
             <select id="gender" name="gender" required defaultValue="">
-              <option value="" disabled>
-                Choose…
-              </option>
+              <option value="" disabled>Choose…</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
             </select>
@@ -161,17 +159,8 @@ export default function Signup() {
 
           <div className="field">
             <label htmlFor="age">Age</label>
-            <input
-              type="number"
-              id="age"
-              name="age"
-              min="0"
-              max="120"
-              step="1"
-              inputMode="numeric"
-              required
-            />
-          </div>
+            <input type="number" id="age" name="age" min="0" max="120" step="1" inputMode="numeric" required />
+          </div> */}
 
           <div className="field">
             <label htmlFor="role">Role</label>
