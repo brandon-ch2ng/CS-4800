@@ -26,6 +26,7 @@ def create_app():
         supports_credentials=False,  # True only if use cookies
         max_age=3600,
     )
+
     JWTManager(app)
 
     # Register Blueprints (route groups)
