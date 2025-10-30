@@ -14,7 +14,7 @@ export default function Login() {
     const email = form.email.value.trim(); // ← match your input name
     const password = form.password.value;
 
-    const res = await fetch("http://127.0.0.1:5000/auth/login", {
+    const res = await fetch("/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }), // ← backend expects "email"

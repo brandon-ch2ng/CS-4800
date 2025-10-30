@@ -1,3 +1,16 @@
+# Run frontend
+    frontend: npm install
+              npm run dev
+            //should appear something like: 
+            Local:   http://localhost:5173/
+    in login page try:
+        email: hanah0201@gmail.com
+        pass: Hannah123
+    this should forward into home page 
+
+
+
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

@@ -46,4 +46,5 @@ def create_app():
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0") #Binding to 0.0.0.0 exposes the server to the host network so the browser (and Vite proxy) can reach it.
+
