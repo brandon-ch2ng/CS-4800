@@ -14,11 +14,22 @@ export default defineConfig({
   server: {
     host: true,      // needed in Codespaces
     port: 5173, //frontend
-    proxy: { //React code can just call fetch('/auth/login').
-      // forward API calls to Flask dev server
-      // '/auth': 'http://localhost:5000',
-      // '/patients': 'http://localhost:5000',
-      // '/doctors': 'http://localhost:5000',
+    proxy: { 
+      '/auth': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/patients': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/doctors': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false,
+      },
       '/api': {
         target: 'http://localhost:5000',
         changeOrigin: true,
