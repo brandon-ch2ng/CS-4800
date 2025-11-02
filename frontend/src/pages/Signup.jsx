@@ -138,11 +138,7 @@ export default function Signup() {
             required
             onChange={onConfirmChange}
           />
-          {/* <div>{confirmMsg}</div>  {"Password match!"} */}
-          <div id="error" role="alert" aria-live="polite">
-            {error}
-          </div>{" "}
-          {"Password do not match!"}
+          
         </div>
 
         <fieldset className="additionalInfo">

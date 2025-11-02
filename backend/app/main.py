@@ -34,6 +34,7 @@ def create_app():
     app.register_blueprint(patient_bp, url_prefix="/patients")
     app.register_blueprint(doctor_bp, url_prefix="/doctors")
     app.register_blueprint(prediction_bp, url_prefix="/api")
+    
 
     # Create MongoDB indexes on startup
     init_indexes()

@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 from app.database import db
 
 auth_bp = Blueprint("auth", __name__)
@@ -59,4 +59,20 @@ def login():
         "role": user["role"],
         "first_name": user["first_name"],
         "last_name": user["last_name"]
+    }), 200
+
+#return WHO logged in (patient or doctor)
+@auth_bp.route("/me", methods=["GET"])
+@jwt_required()
+def me():
+    email = get_jwt_identity()
+    claims = get_jwt()
+    user = db.users.find_one({"email": email}, {"_id": 0, "password": 0})
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    return jsonify({
+        "email": email,
+        "role": claims.get("role"),
+        "first_name": user.get("first_name"),
+        "last_name": user.get("last_name"),
     }), 200
