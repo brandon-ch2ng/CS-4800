@@ -2,6 +2,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from app.database import db
+from datetime import datetime
 # from joblib import load  # use when ML dev provides a model file
 
 prediction_bp = Blueprint("prediction", __name__)
@@ -26,7 +27,7 @@ def _gender_to_idx(v):
     mapping = {"male": 0, "female": 1}
     return mapping.get(s, 0)  # default to 'male'
 
-# Explicit model feature order (can be adjust later if ML specifies a different order)
+# Explicit model feature order (Adjust later if ML specifies a different order)
 FEATURE_ORDER = [
     "fever", "cough", "fatigue", "difficulty_breathing",
     "blood_pressure", "cholesterol_level",
@@ -125,12 +126,20 @@ def predict():
     proba = model.predict_proba([vector])[0]  # [p0, p1]
     label = int(proba[1] >= 0.5)
 
+     # Save prediction
+    pred_doc = {
+        "patient_email": email,
+        "features": encoded,
+        "feature_order": FEATURE_ORDER,
+        "result": {"label": label, "probability": float(proba[1])},
+        "created_at": datetime.utcnow()
+    }
+    inserted = db.predictions.insert_one(pred_doc)
+
     # 5) Respond
     return jsonify({
-        "input_used": encoded,          # normalized numeric features
-        "vector_order": FEATURE_ORDER,  # transparency for debugging
-        "result": {
-            "label": label,
-            "probability": float(proba[1])
-        }
+        "input_used": encoded,
+        "vector_order": FEATURE_ORDER,
+        "result": {"label": label, "probability": float(proba[1])},
+        "prediction_id": str(inserted.inserted_id)
     }), 200

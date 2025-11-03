@@ -68,3 +68,64 @@ def update_profile():
     )
 
     return jsonify({"message": "Profile saved successfully"}), 200
+
+
+# -------------------------------
+# Get Patient note list
+# -------------------------------
+
+@patient_bp.route("/notes", methods=["GET"])
+@jwt_required()
+def my_notes():
+    """
+    Patient: view doctor notes about themselves that are visible_to_patient=True
+    Optional query: ?prediction_id=<ObjectId>
+    """
+    claims = get_jwt()
+    if claims.get("role") != "patient":
+        return jsonify({"error": "Access denied"}), 403
+
+    email = get_jwt_identity()
+    q = {"patient_email": email, "visible_to_patient": True}
+
+    prediction_id_str = request.args.get("prediction_id")
+    if prediction_id_str:
+        try:
+            q["prediction_id"] = ObjectId(prediction_id_str)
+        except Exception:
+            return jsonify({"error": "Invalid prediction_id"}), 400
+
+    notes = list(db.notes.find(q).sort("created_at", -1))
+    for n in notes:
+        n["_id"] = str(n["_id"])
+        if n.get("prediction_id"):
+            n["prediction_id"] = str(n["prediction_id"])
+    return jsonify({"notes": notes}), 200
+
+
+# -------------------------------
+# Get a single note
+# -------------------------------
+
+@patient_bp.route("/notes/<note_id>", methods=["GET"])
+@jwt_required()
+def my_single_note(note_id):
+    """Patient: view a single visible note by id."""
+    claims = get_jwt()
+    if claims.get("role") != "patient":
+        return jsonify({"error": "Access denied"}), 403
+
+    email = get_jwt_identity()
+    try:
+        _id = ObjectId(note_id)
+    except Exception:
+        return jsonify({"error": "Invalid note_id"}), 400
+
+    note = db.notes.find_one({"_id": _id, "patient_email": email, "visible_to_patient": True})
+    if not note:
+        return jsonify({"error": "Note not found"}), 404
+
+    note["_id"] = str(note["_id"])
+    if note.get("prediction_id"):
+        note["prediction_id"] = str(note["prediction_id"])
+    return jsonify({"note": note}), 200

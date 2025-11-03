@@ -20,6 +20,14 @@ def init_indexes():
     try:
         db.users.create_index("email", unique=True)
         db.patients.create_index("email")
-        print("Indexes ensured for 'users' and 'patients' collections.")
+        
+        # Predictions (list by patient, newest first)
+        db.predictions.create_index([("patient_email", 1), ("created_at", -1)])
+
+        # Notes (list by patient, newest first; and by prediction)
+        db.notes.create_index([("patient_email", 1), ("created_at", -1)])
+        db.notes.create_index([("prediction_id", 1)])
+
+        print("Indexes ensured for 'users', 'patients', 'predictions', and 'notes'.")
     except Exception as e:
         print("Error creating indexes:", e)
