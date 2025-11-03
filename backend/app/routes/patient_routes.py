@@ -53,7 +53,8 @@ def update_profile():
         "gender", "age",
         "fever", "cough", "fatigue",
         "difficulty_breathing",
-        "blood_pressure", "cholesterol_level"
+        "blood_pressure", "cholesterol_level",
+        "survey_completed" # if patient alr filled survey
     }
     update_data = {k: v for k, v in data.items() if k in allowed_fields}
 
