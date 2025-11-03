@@ -8,6 +8,9 @@ from app.routes.prediction_routes import prediction_bp
 from app.database import init_indexes
 from dotenv import load_dotenv
 import os
+from app.routes.disease_routes import disease_bp
+
+
 
 load_dotenv()
 
@@ -34,7 +37,7 @@ def create_app():
     app.register_blueprint(patient_bp, url_prefix="/patients")
     app.register_blueprint(doctor_bp, url_prefix="/doctors")
     app.register_blueprint(prediction_bp, url_prefix="/api")
-    
+    app.register_blueprint(disease_bp, url_prefix="/catalog")
 
     # Create MongoDB indexes on startup
     init_indexes()
