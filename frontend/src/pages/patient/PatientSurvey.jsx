@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./patient.css";
+import "./survey.css";
 
 export default function PatientSurvey({ onDone }) {
   const [form, setForm] = useState({

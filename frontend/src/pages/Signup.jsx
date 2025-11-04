@@ -29,8 +29,8 @@ export default function Signup() {
 
     const payload = {
       email: f.email.value.trim(),
-      first_name: f.first_name.value.trim(),
-      last_name: f.last_name.value.trim(),
+      first_name: f.first_name.value,
+      last_name: f.last_name.value,
       password: f.password.value,
       role: f.role.value,
       //gender

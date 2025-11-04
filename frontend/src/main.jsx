@@ -1,18 +1,17 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-
 import './index.css'
 
 import Login from './pages/Login.jsx'
 import Signup from './pages/Signup.jsx'
-
 // NEW imports
 import ProtectedRoute from './auth/ProtectedRoute.jsx'
 import DashboardRouter from './pages/DashboardRouter.jsx'
 import PatientDashboard from './pages/patient/PatientDashboard.jsx'
 import DoctorDashboard from './pages/doctor/DoctorDashboard.jsx'
 
+//React Route
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
@@ -26,7 +25,8 @@ createRoot(document.getElementById('root')).render(
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <DashboardRouter />
+              {/* go to this frontend route after login */}
+              <DashboardRouter /> 
             </ProtectedRoute>
           }
         />

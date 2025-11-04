@@ -8,13 +8,13 @@ patient_bp = Blueprint("patients", __name__)
 # Dashboard
 # -------------------------------
 @patient_bp.route("/", methods=["GET"])
-@jwt_required()
+@jwt_required() #ensures a valid token is present
 def patient_dashboard():
     email = get_jwt_identity()  # use email as identity
     claims = get_jwt()
     if claims.get("role") != "patient":
         return jsonify({"error": "Access denied"}), 403
-    return jsonify({"message": f"Welcome patient {email}!"})
+    return jsonify({"message": f"Welcome {email}!"})
 
 
 # -------------------------------

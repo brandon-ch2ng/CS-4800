@@ -124,7 +124,7 @@ def predict():
     # 4) Predict
     model = get_model()
     proba = model.predict_proba([vector])[0]  # [p0, p1]
-    label = int(proba[1] >= 0.5)
+    label = int(proba[1] >= 0.5) #1 = positive, 0 = negative
 
      # Save prediction
     pred_doc = {
