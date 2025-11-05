@@ -7,15 +7,6 @@ export default function AiPredictionPanel() {
 
   // Optional override fields for quick "what-if" runs
   const [overrides, setOverrides] = useState({
-    // leave blank to use stored profile; fill to override ad-hoc
-    // gender: "Female",
-    // age: 42,
-    // blood_pressure: "High", // Low | Normal | High
-    // cholesterol_level: "Normal",
-    // fever: "No",            // Yes | No
-    // cough: "Yes",           // Yes | No
-    // fatigue: "No",
-    // difficulty_breathing: "No",
   });
 
   async function runPrediction() {
@@ -32,6 +23,17 @@ export default function AiPredictionPanel() {
         body: JSON.stringify(cleanOverrides(overrides)),
       });
       const data = await res.json().catch(() => ({}));
+
+      //may get http401 error if user login too long 
+      if (res.status === 401) {
+        // Helpful message + cleanup
+        if (token) localStorage.removeItem("token");
+        throw new Error(
+          data.error ||
+          "Unauthorized (401). Please sign in again or refresh your session."
+        );
+      }
+      
       if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
 
       // { result: { label, probability }, prediction_id, input_used, vector_order }
@@ -45,16 +47,23 @@ export default function AiPredictionPanel() {
   }
 
   return (
-    <section className="pd-card">
+    <section className="pd-predict">
       <div className="pd-row" style={{ justifyContent: "space-between" }}>
         <h3 className="pd-h3">AI Health Assistant</h3>
+        {/* run prediction when user click button */}
         <button className="pd-btn" onClick={runPrediction} disabled={loading}>
           {loading ? "Running…" : "Run Prediction"}
         </button>
       </div>
 
-      {/* (Optional) quick override inputs – uncomment if want inline “what-if” */}
-      {/* <div className="pd-grid-2">
+      {error && <div className="pd-error" style={{ marginTop: 8 }}>{error}</div>}
+
+      {!result && !error && (
+        <div className="pd-text-muted">Run a prediction using your saved profile (or optional overrides).</div>
+      )}
+      
+      {/* (Optional) quick override inputs */}
+      <div className="pd-grid-2">
         <LabeledInput label="Gender" placeholder="Female / Male"
           value={overrides.gender || ""} onChange={v => setOverrides(s => ({...s, gender: v}))} />
         <LabeledInput label="Age" placeholder="e.g., 42"
@@ -71,13 +80,8 @@ export default function AiPredictionPanel() {
           value={overrides.fatigue || ""} onChange={v => setOverrides(s => ({...s, fatigue: v}))} />
         <LabeledInput label="Difficulty Breathing" placeholder="Yes / No"
           value={overrides.difficulty_breathing || ""} onChange={v => setOverrides(s => ({...s, difficulty_breathing: v}))} />
-      </div> */}
+      </div>
 
-      {error && <div className="pd-error" style={{ marginTop: 8 }}>{error}</div>}
-
-      {!result && !error && (
-        <div className="pd-text-muted">Run a prediction using your saved profile (or optional overrides).</div>
-      )}
 
       {result && (
         <div className="pd-note-box" style={{ marginTop: 10 }}>
@@ -99,8 +103,8 @@ export default function AiPredictionPanel() {
   );
 }
 
+//removes any empty or null fields so only filled overrides are sent to the API (not null or undefined..)
 function cleanOverrides(o) {
-  // Remove empty keys so the backend uses stored profile for those
   const out = {};
   Object.entries(o).forEach(([k, v]) => {
     if (v !== "" && v != null) out[k] = v;

@@ -40,7 +40,7 @@ export default function PatientSurvey({ onDone }) {
 
     try {
       const res = await fetch("/patients/profile", {
-        method: "PUT",
+        method: "PUT", //put patient info into db 
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload),
       });

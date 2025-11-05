@@ -31,9 +31,17 @@ export default function PatientDashboard() {
     setError("");
     try {
       // welcome
-      const r1 = await apiGet("/patients/");
+      const r1 = await apiGet("/patients/"); //from backend
       const d1 = await r1.json().catch(() => ({}));
-      if (r1.ok) setWelcome(d1.message || "");
+      if (r1.ok){
+        const msg = d1.message ?? "";
+        //So only display "Welcome hannah0201" without the @gmail.com
+        const pretty = msg.replace(
+          /([Ww]elcome\s+)([A-Za-z0-9._%+-]+)@([A-Za-z0-9.-]+\.[A-Za-z]{2,})/,
+          (_, prefix, user) => `${prefix}${user}`
+        );
+        setWelcome(pretty);
+      }
 
       // profile
       const r2 = await apiGet("/patients/profile"); //Request the current patient profile
@@ -88,82 +96,84 @@ export default function PatientDashboard() {
   }
 
   return (
-  <div className="pd-page">
+  <div> 
     {/* If loading is true, show a semi-transparent “Loading…” message. */}
-    {loading && <div className="pd-loading">Loading…</div>}
-    {error && <div className="pd-error">{error}</div>}
+      {loading && <div className="pd-loading">Loading…</div>}
+      {error && <div className="pd-error">{error}</div>}
 
-    {/* Welcome */}
-    {welcome && <h2 className="pd-welcome">{welcome}</h2>}
+      {/* Welcome */}
+      {welcome && <h2 className="pd-welcome">{welcome}</h2>}
 
-    {/* Survey */}
-    {showSurvey && <PatientSurvey onDone={handleSurveyDone} />}
+    <div className="pd-page">
+      {/* Survey */}
+      {showSurvey && <PatientSurvey onDone={handleSurveyDone} />}
 
-    {/* Profile */}
-    {profile && (
-      <section className="pd-card">
-        <h3 className="pd-h3">My Profile</h3>
-        <div>Age: <b>{profile.age ?? "—"}</b></div>
-        <div>Gender: <b>{capFirst(profile.gender) ?? "—"}</b></div>
-        <div>Blood Pressure: <b>{capFirst(profile.blood_pressure) ?? "—"}</b></div>
-        <div>Cholesterol: <b>{capFirst(profile.cholesterol_level) ?? "—"}</b></div>
-        {/* converts true/false/undefined to Yes/No/— */}
-        <div>Cough: <b>{fmtBool(profile.cough)}</b></div>
-        <div>Fatigue: <b>{fmtBool(profile.fatigue)}</b></div>
-        <div>Difficulty Breathing: <b>{fmtBool(profile.difficulty_breathing)}</b></div>
-      </section>
-    )}
+      {/* Profile */}
+      {profile && (
+        <section className="pd-profile">
+          <h3 className="pd-h3">My Profile</h3>
+          <div className="info">Age: <b>{profile.age ?? "—"}</b></div>
+          <div className="info">Gender: <b>{capFirst(profile.gender) ?? "—"}</b></div>
+          <div className="info">Blood Pressure: <b>{capFirst(profile.blood_pressure) ?? "—"}</b></div>
+          <div className="info">Cholesterol: <b>{capFirst(profile.cholesterol_level) ?? "—"}</b></div>
+          {/* converts true/false/undefined to Yes/No/— */}
+          <div className="info">Cough: <b>{fmtBool(profile.cough)}</b></div>
+          <div className="info">Fatigue: <b>{fmtBool(profile.fatigue)}</b></div>
+          <div className="info">Difficulty Breathing: <b>{fmtBool(profile.difficulty_breathing)}</b></div>
+        </section>
+      )}
 
-    {/* Doctor Notes */}
-  <section className="pd-card">
-    <h3 className="pd-h3">Doctor Notes</h3>
-    {doctorNotes.length === 0 && <div className="pd-text-muted">No notes.</div>}
-    {doctorNotes.map(n => (
-      <div key={n._id} className="pd-note-box">
-        <div className="pd-note-title">{n.title || n.subject || "Doctor note"}</div>
-        <div className="pd-note-text">{n.text || n.summary || "—"}</div>
-        <div className="pd-text-muted-sm">
-          {fmtDateTime(n.created_at)}{n.doctor_name ? ` • ${n.doctor_name}` : ""}
-        </div>
-      </div>
-    ))}
-  </section>
-
-  {/* AI Health Assistant (predictions) */}
-  <AiPredictionPanel />
-
-    {/* Appointments*/}
-    <section className="pd-card">
-      <h3 className="pd-h3">Appointments</h3>
-      {appts.length === 0 && <div className="pd-text-muted">No upcoming appointments.</div>}
-      {appts.map(a => {
-        const d = new Date(a.when);
-        return (
-          <div key={a.id} className="pd-appt-item">
-            <div>
-              <div className="pd-strong">
-                {d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
-              </div>
-              <div className="pd-text-muted-sm">
-                {d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}
-              </div>
-            </div>
-            <div className="pd-flex-1">
-              <div className="pd-strong">{a.doctor_name}</div>
-              <div className="pd-text-muted-sm">{a.specialty}</div>
-            </div>
-            <span
-              className={`pd-pill ${
-                a.status === "Confirmed" ? "pd-pill-pos" :
-                a.status === "Pending"   ? "pd-pill-warn" : "pd-pill-muted"
-              }`}
-            >
-              {a.status}
-            </span>
+      {/* Doctor Notes */}
+    <section className="pd-note">
+      <h3 className="pd-h3">Doctor Notes</h3>
+      {doctorNotes.length === 0 && <div className="pd-text-muted">No notes.</div>}
+      {doctorNotes.map(n => (
+        <div key={n._id} className="pd-note-box">
+          <div className="pd-note-title">{n.title || n.subject || "Doctor note"}</div>
+          <div className="pd-note-text">{n.text || n.summary || "—"}</div>
+          <div className="pd-text-muted-sm">
+            {fmtDateTime(n.created_at)}{n.doctor_name ? ` • ${n.doctor_name}` : ""}
           </div>
-        );
-      })}
+        </div>
+      ))}
     </section>
+
+    {/* AI Health Assistant (predictions) */}
+    <AiPredictionPanel />
+
+      {/* Appointments*/}
+      <section className="pd-appointment">
+        <h3 className="pd-h3">Appointments</h3>
+        {appts.length === 0 && <div className="pd-text-muted">No upcoming appointments.</div>}
+        {appts.map(a => {
+          const d = new Date(a.when);
+          return (
+            <div key={a.id} className="pd-appt-item">
+              <div>
+                <div className="pd-strong">
+                  {d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
+                </div>
+                <div className="pd-text-muted-sm">
+                  {d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}
+                </div>
+              </div>
+              <div className="pd-flex-1">
+                <div className="pd-strong">{a.doctor_name}</div>
+                <div className="pd-text-muted-sm">{a.specialty}</div>
+              </div>
+              <span
+                className={`pd-pill ${
+                  a.status === "Confirmed" ? "pd-pill-pos" :
+                  a.status === "Pending"   ? "pd-pill-warn" : "pd-pill-muted"
+                }`}
+              >
+                {a.status}
+              </span>
+            </div>
+          );
+        })}
+      </section>
+    </div>
   </div>
 );
 }
