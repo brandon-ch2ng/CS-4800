@@ -21,6 +21,8 @@ def doctor_dashboard():
         return jsonify({"error": "Access denied"}), 403
     return jsonify({"message": f"Welcome doctor {username}!"})
 
+
+# add a note 
 @doctor_bp.route("/notes", methods=["POST"])
 @jwt_required()
 def add_note():
