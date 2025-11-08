@@ -55,7 +55,7 @@ Create a .env file in the backend/ folder with the following variables:
 ```bash
 MONGO_URI=<your-mongodb-atlas-uri>
 DB_NAME=<your-database-name>
-JWT_SECRET_KEY=<your-jwt-secret>
+JWT_SECRET=<your-jwt-secret>
 ```
 
 ### 5. Run the backend server
