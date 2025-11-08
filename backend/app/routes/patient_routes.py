@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
+from bson import ObjectId
 from app.database import db
 
 patient_bp = Blueprint("patients", __name__)
@@ -8,9 +9,9 @@ patient_bp = Blueprint("patients", __name__)
 # Dashboard
 # -------------------------------
 @patient_bp.route("/", methods=["GET"])
-@jwt_required() #ensures a valid token is present
+@jwt_required()
 def patient_dashboard():
-    email = get_jwt_identity()  # use email as identity
+    email = get_jwt_identity()
     claims = get_jwt()
     if claims.get("role") != "patient":
         return jsonify({"error": "Access denied"}), 403
@@ -54,7 +55,7 @@ def update_profile():
         "fever", "cough", "fatigue",
         "difficulty_breathing",
         "blood_pressure", "cholesterol_level",
-        "survey_completed" # if patient alr filled survey
+        "survey_completed"
     }
     update_data = {k: v for k, v in data.items() if k in allowed_fields}
 
