@@ -5,7 +5,7 @@ This is the backend server for the Patient Disease Prediction app. It is built u
 - User registration and login
 - Role-based access for patients and doctors
 - Patient/doctor dashboards
-- AI prediction routes (future integration)
+- AI prediction routes
 
 ---
 
@@ -55,7 +55,7 @@ Create a .env file in the backend/ folder with the following variables:
 ```bash
 MONGO_URI=<your-mongodb-atlas-uri>
 DB_NAME=<your-database-name>
-JWT_SECRET_KEY=<your-jwt-secret>
+JWT_SECRET=<your-jwt-secret>
 ```
 
 ### 5. Run the backend server
