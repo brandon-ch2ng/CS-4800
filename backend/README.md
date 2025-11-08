@@ -5,7 +5,7 @@ This is the backend server for the Patient Disease Prediction app. It is built u
 - User registration and login
 - Role-based access for patients and doctors
 - Patient/doctor dashboards
-- AI prediction routes (future integration)
+- AI prediction routes
 
 ---
 

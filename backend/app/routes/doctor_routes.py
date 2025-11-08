@@ -15,11 +15,11 @@ def _require_doctor():
 @doctor_bp.route("/", methods=["GET"])
 @jwt_required()
 def doctor_dashboard():
-    username = get_jwt_identity()
+    email = get_jwt_identity()
     claims = get_jwt()
     if claims.get("role") != "doctor":
         return jsonify({"error": "Access denied"}), 403
-    return jsonify({"message": f"Welcome doctor {username}!"})
+    return jsonify({"message": f"Welcome doctor {email}!"})
 
 
 # add a note 
@@ -53,7 +53,7 @@ def add_note():
     if not patient:
         return jsonify({"error": "Patient not found"}), 404
 
-    # Optional: validate prediction belongs to patient
+    # validate prediction belongs to patient
     prediction_id = None
     if prediction_id_str:
         try:
@@ -65,7 +65,7 @@ def add_note():
 
     doc = {
         "patient_email": patient_email,
-        "prediction_id": prediction_id,     # may be None
+        "prediction_id": prediction_id, # may be None
         "note": note_text,
         "visible_to_patient": visible_to_patient,
         "doctor_email": doctor_email,
@@ -116,3 +116,63 @@ def list_notes_for_prediction(prediction_id):
         if n.get("prediction_id"):
             n["prediction_id"] = str(n["prediction_id"])
     return jsonify({"notes": notes}), 200
+
+
+# -------------------------
+# DOCTOR: list my patients
+# -------------------------
+@doctor_bp.get("/patients")
+@jwt_required()
+def my_patients():
+    claims = get_jwt()
+    if claims.get("role") != "doctor":
+        return jsonify({"error": "Access denied"}), 403
+
+    doc_email = get_jwt_identity()
+    # Distinct patient emails who requested appointments with this doctor
+    emails = db.appointments.distinct("patient_email", {"doctor_email": doc_email})
+    if not emails:
+        return jsonify({"items": []})
+
+    # Pull basic profile info from patients + names from users
+    profiles = {p.get("email"): p for p in db.patients.find({"email": {"$in": emails}}, {"_id": 0})}
+    users = {u.get("email"): u for u in db.users.find({"email": {"$in": emails}}, {"_id": 0, "password": 0})}
+
+    items = []
+    for e in emails:
+        u = users.get(e, {})
+        p = profiles.get(e, {})
+        items.append({
+            "email": e,
+            "first_name": u.get("first_name"),
+            "last_name": u.get("last_name"),
+            "gender": p.get("gender"),
+            "age": p.get("age"),
+        })
+    return jsonify({"items": items})
+
+
+# -------------------------
+# DOCTOR: view a patient's profile
+# -------------------------
+@doctor_bp.get("/patient-profile")
+@jwt_required()
+def patient_profile_by_email():
+    claims = get_jwt()
+    if claims.get("role") != "doctor":
+        return jsonify({"error": "Access denied"}), 403
+
+    target = request.args.get("email")
+    if not target:
+        return jsonify({"error": "email query param required"}), 400
+
+    # Merge user + patient (hide password)
+    user = db.users.find_one({"email": target}, {"_id": 0, "password": 0})
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    profile = db.patients.find_one({"email": target}, {"_id": 0}) or {}
+
+    return jsonify({
+        "user": user, # first_name, last_name, email, role
+        "profile": profile # gender, age, symptoms, etc.
+    })
