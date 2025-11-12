@@ -4,8 +4,13 @@
             //should appear something like: 
             Local:   http://localhost:5173/
     in login page try:
+        --Patient--
         email: hanah0201@gmail.com
         pass: Hannah123
+
+        --Doctor--
+        email: parker@gmail.com
+        pass: Parker1234
     this should forward into home page 
 
 

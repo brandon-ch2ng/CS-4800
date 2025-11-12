@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import PatientSurvey from "./PatientSurvey";
 import AiPredictionPanel from "./AiPredictionPanel";
+import AppointmentBooking from "./AppointmentBooking";
 import "./dashboard.css";
 
 export default function PatientDashboard() {
@@ -12,6 +13,8 @@ export default function PatientDashboard() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);  // NEW: simple spinner
   const [showSurvey, setShowSurvey] = useState(true);
+  const [editMode, setEditMode] = useState(false); // NEW: edit mode state
+  const [showBooking, setShowBooking] = useState(false); // booking mode
 
   //helper function to call API to backend
   async function apiGet(path) {
@@ -20,6 +23,25 @@ export default function PatientDashboard() {
     if (res.status === 401) {
       localStorage.clear();
       window.location.assign("/");  // force re-login
+      throw new Error("Unauthorized");
+    }
+    return res;
+  }
+
+  //helper function to POST to backend
+  async function apiPost(path, body) {
+    const token = localStorage.getItem("token");
+    const res = await fetch(path, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(body)
+    });
+    if (res.status === 401) {
+      localStorage.clear();
+      window.location.assign("/"); // force re-login
       throw new Error("Unauthorized");
     }
     return res;
@@ -58,7 +80,7 @@ export default function PatientDashboard() {
         }
       }
 
-      //Doctor's notes
+        //Doctor's notes
       try {
         const rNotes = await apiGet("/patients/notes");        // doctor notes only
         const dNotes = await rNotes.json().catch(() => ({}));
@@ -72,11 +94,11 @@ export default function PatientDashboard() {
         setPredictions(Array.isArray(dPred.predictions) ? dPred.predictions : []);
       } catch { setPredictions([]); }
 
-      // appointments (optional: add backend /patients/appointments)
+      /// appointments - use /appointments/mine endpoint
       try {
-        const r4 = await apiGet("/patients/appointments");
+        const r4 = await apiGet("/appointments/mine"); // /mine: PATIENT: My Request
         const d4 = await r4.json().catch(() => ({}));
-        setAppts(Array.isArray(d4.appointments) ? d4.appointments : []);
+        setAppts(Array.isArray(d4.items) ? d4.items : []);
       } catch {
         setAppts([]);
       }
@@ -88,94 +110,140 @@ export default function PatientDashboard() {
     }
   }
 
+  // Run fetchProfile() once when component first mounts, [] -> run only once
   useEffect(() => { fetchProfile(); }, []);
 
   async function handleSurveyDone() {
-    // After PUT in PatientSurvey succeeds, refresh from server
+    // Callback function for when user completes the survey
+    // Re-fetches all profile data to get updated information
     await fetchProfile();
+    setEditMode(false); // exit edit mode after saving 
+    setShowBooking(false); // exit booking mode
   }
 
-  return (
-  <div> 
-    {/* If loading is true, show a semi-transparent “Loading…” message. */}
-      {loading && <div className="pd-loading">Loading…</div>}
-      {error && <div className="pd-error">{error}</div>}
+  function editProfile() {
+    setEditMode(true); // editing profile
+    setShowBooking(false); // close booking if open
+  }
 
-      {/* Welcome */}
-      {welcome && <h2 className="pd-welcome">{welcome}</h2>}
+  function cancelEdit() {
+    setEditMode(false);
+  }
 
-    <div className="pd-page">
-      {/* Survey */}
-      {showSurvey && <PatientSurvey onDone={handleSurveyDone} />}
+  // make new appointment
+  function makeNewApp(){
+    setShowBooking(true);
+  }
 
-      {/* Profile */}
-      {profile && (
-        <section className="pd-profile">
-          <h3 className="pd-h3">My Profile</h3>
-          <div className="info">Age: <b>{profile.age ?? "—"}</b></div>
-          <div className="info">Gender: <b>{capFirst(profile.gender) ?? "—"}</b></div>
-          <div className="info">Blood Pressure: <b>{capFirst(profile.blood_pressure) ?? "—"}</b></div>
-          <div className="info">Cholesterol: <b>{capFirst(profile.cholesterol_level) ?? "—"}</b></div>
-          {/* converts true/false/undefined to Yes/No/— */}
-          <div className="info">Cough: <b>{fmtBool(profile.cough)}</b></div>
-          <div className="info">Fatigue: <b>{fmtBool(profile.fatigue)}</b></div>
-          <div className="info">Difficulty Breathing: <b>{fmtBool(profile.difficulty_breathing)}</b></div>
-        </section>
-      )}
+  function cancelBooking() {
+    setShowBooking(false);
+  }
 
-      {/* Doctor Notes */}
-    <section className="pd-note">
-      <h3 className="pd-h3">Doctor Notes</h3>
-      {doctorNotes.length === 0 && <div className="pd-text-muted">No notes.</div>}
-      {doctorNotes.map(n => (
-        <div key={n._id} className="pd-note-box">
-          <div className="pd-note-title">{n.title || n.subject || "Doctor note"}</div>
-          <div className="pd-note-text">{n.text || n.summary || "—"}</div>
-          <div className="pd-text-muted-sm">
-            {fmtDateTime(n.created_at)}{n.doctor_name ? ` • ${n.doctor_name}` : ""}
+  async function onBookingSuccess() {
+    await fetchProfile(); // refresh appointments
+    setShowBooking(false); // exit
+  }
+
+
+return (
+    <div> 
+      {loading && <div className="pat-loading">Loading…</div>}
+      {error && <div className="pat-error">{error}</div>}
+      {welcome && <h2 className="pat-welcome">{welcome}</h2>}
+
+      {showBooking ? (
+        <AppointmentBooking 
+          onCancel={cancelBooking}
+          onSuccess={onBookingSuccess}
+        />
+      ) : (showSurvey || editMode) ? (
+        <div className="pat-page-survey-only">
+          <div style={{width: '100%', maxWidth: '1100px'}}>
+            <PatientSurvey
+              onDone={handleSurveyDone} 
+              existingProfile={editMode ? profile : null}
+            /> 
           </div>
         </div>
-      ))}
-    </section>
-
-    {/* AI Health Assistant (predictions) */}
-    <AiPredictionPanel />
-
-      {/* Appointments*/}
-      <section className="pd-appointment">
-        <h3 className="pd-h3">Appointments</h3>
-        {appts.length === 0 && <div className="pd-text-muted">No upcoming appointments.</div>}
-        {appts.map(a => {
-          const d = new Date(a.when);
-          return (
-            <div key={a.id} className="pd-appt-item">
-              <div>
-                <div className="pd-strong">
-                  {d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
+      ) : (
+        <div className="pat-page">
+          {profile && (
+            <>
+              <section className="pat-profile">
+                <div className="pat-row">
+                  <h3 className="pat-h3">My Profile</h3>
+                  <button className="pat-edit-profile" onClick={editProfile} disabled={loading}>
+                    {loading ? "Running…" : "Edit Profile"}
+                  </button>
                 </div>
-                <div className="pd-text-muted-sm">
-                  {d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}
+                <div className="pat-info">Age: <b>{profile.age ?? "—"}</b></div>
+                <div className="pat-info">Gender: <b>{capFirst(profile.gender) ?? "—"}</b></div>
+                <div className="pat-info">Blood Pressure: <b>{capFirst(profile.blood_pressure) ?? "—"}</b></div>
+                <div className="pat-info">Cholesterol: <b>{capFirst(profile.cholesterol_level) ?? "—"}</b></div>
+                <div className="pat-info">Cough: <b>{fmtBool(profile.cough)}</b></div>
+                <div className="pat-info">Fatigue: <b>{fmtBool(profile.fatigue)}</b></div>
+                <div className="pat-info">Difficulty Breathing: <b>{fmtBool(profile.difficulty_breathing)}</b></div>
+              </section>
+
+              <section className="pat-note">
+                <h3 className="pat-h3">Doctor Notes</h3>
+                {doctorNotes.length === 0 && <div className="pat-text-muted">No notes.</div>}
+                {doctorNotes.map(n => (
+                  <div key={n._id} className="pat-note-box">
+                    <div className="pat-note-title">{n.title || n.subject || "Doctor note"}</div>
+                    <div className="pat-note-text">{n.note || n.summary || "—"}</div>
+                    <div className="pat-text-muted-sm">
+                      {fmtDateTime(n.created_at)}{n.doctor_name ? ` • ${n.doctor_name}` : ""}
+                    </div>
+                  </div>
+                ))}
+              </section>
+
+              {/* ex: pat-grid-2 */}
+              <AiPredictionPanel classPrefix="pat" /> 
+
+              <section className="pat-appointment">
+                <div className="pat-row">
+                  <h3 className="pat-h3">Appointments</h3>
+                  <button className="pat-edit-profile" onClick={makeNewApp} disabled={loading}>
+                    {loading ? "Running…" : "Make New Appointment"}
+                  </button>
                 </div>
-              </div>
-              <div className="pd-flex-1">
-                <div className="pd-strong">{a.doctor_name}</div>
-                <div className="pd-text-muted-sm">{a.specialty}</div>
-              </div>
-              <span
-                className={`pd-pill ${
-                  a.status === "Confirmed" ? "pd-pill-pos" :
-                  a.status === "Pending"   ? "pd-pill-warn" : "pd-pill-muted"
-                }`}
-              >
-                {a.status}
-              </span>
-            </div>
-          );
-        })}
-      </section>
+                {appts.length === 0 && <div className="pat-text-muted">No appointment requests.</div>}
+                {appts.map(a => {
+                  const d = new Date(a.requested_time);
+                  return (
+                    <div key={a._id} className="pat-appt-item">
+                      <div>
+                        <div className="pat-strong">
+                          {d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
+                        </div>
+                        <div className="pat-text-muted-sm">
+                          {d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}
+                        </div>
+                      </div>
+                      <div className="pat-flex-1">
+                        <div className="pat-strong">{a.doctor_email}</div>
+                        {a.reason && <div className="pat-text-muted-sm">{a.reason}</div>}
+                      </div>
+                      <span
+                        className={`pat-pill ${
+                          a.status === "accepted" ? "pat-pill-pos" :
+                          a.status === "pending"   ? "pat-pill-warn" : "pat-pill-muted"
+                        }`}
+                      >
+                        {a.status}
+                      </span>
+                    </div>
+                  );
+                })}
+              </section>
+            </>
+          )}
+        </div>
+      )}
     </div>
-  </div>
-);
+  );
 }
 
 /* -------Helpers--------*/
@@ -189,5 +257,5 @@ function capFirst(v) {
 
 function fmtBool(v){ return v === true ? "Yes" : v === false ? "No" : "—"; }
 // formats an ISO timestamp into a local time like “10:31 AM”.
-function fmtTime(iso){ return iso ? new Date(iso).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}) : ""; }
+function fmtDateTime(iso){ return iso ? new Date(iso).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}) : ""; }
 
