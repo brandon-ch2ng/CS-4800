@@ -1,5 +1,7 @@
 body {
-    background: url(images/background.jpg) center / cover no-repeat;
+    /* background: url(images/background.jpg) center / cover no-repeat; */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -65,7 +67,7 @@ button {
    font-size: 15px;
 }
 
-button:hover {
+.form button:hover, .formSignup button:hover{
     background-color: lightskyblue; 
     width: 155px;
     height: 30px;

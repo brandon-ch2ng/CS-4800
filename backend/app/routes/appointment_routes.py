@@ -36,7 +36,7 @@ def create_appointment():
     doc = {
         "patient_email": patient_email,
         "doctor_email": doctor_email,
-        "requested_time": requested_time, # frontend sends ISO
+        "requested_time": requested_time, # frontend sends ISO (YYYY-MM-DD)?
         "reason": reason or None,
         "status": "pending", # pending | accepted | rejected
         "created_at": _now(),

@@ -1,150 +1,463 @@
+/* ===== Survey-only layout (centered) ===== */
+.pat-page-survey-only {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 32px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
 /* ===== Main page grid ===== */
-.pd-page {
-  max-width: 1200px;          /* pick a site width you like */
-  margin: 28px auto;          /* <-- centers */
-  padding: 0 24px;          /* no centering margin */
-  padding: 28px 18px;     /* keep some breathing room */
+.pat-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
   display: grid;
-  gap: var(--gap-lg);
+  gap: 2px;
   grid-template-columns: minmax(480px, 1.25fr) minmax(320px, 0.9fr);
   grid-template-areas:
     "profile predict"
-    "profile predict"
-    "note    predict"
+    "note predict"
     "appointment appointment";
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
 }
-
 
 /* Stack on small screens */
 @media (max-width: 900px){
-  .pd-page {
+  .pat-page {
     grid-template-columns: 1fr;
     grid-template-areas:
-      "welcome"
-      "predict"
       "profile"
-      "notes"
-      "appts";
+      "note"
+      "predict"
+      "appointment";
+    padding: 20px 16px;
+  }
+  
+  .pat-page-survey-only {
+    padding: 20px 16px;
   }
 }
 
-.pd-loading { opacity: 0.8; }
-.pd-error { color: #fca5a5; margin-bottom: 12px; }
-.pd-welcome { margin-top: 0; }
+.pat-loading { 
+  opacity: 0.6;
+  color: white;
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+}
 
-.pd-profile {
+.pat-error { 
+  color: #ef4444; 
+  background: #fef2f2;
+  padding: 12px;
+  border-radius: 8px;
+  margin: 16px auto;
+  max-width: 600px;
+  border-left: 4px solid #ef4444;
+}
+
+.pat-welcome { 
+  margin: 0;
+  padding: 32px 24px 0;
+  color: white;
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.pat-profile {
   background: white;
-  border: 1px solid #1f2937;
-  border-radius: 12px;
-  padding: 16px 16px 0 16px; /* all except bottom */
+  border: none;
+  border-radius: 16px;
+  padding: 24px;
   grid-area: profile;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
-.info {
-  padding: 5px;
+.pat-profile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
 }
-.pd-note {
+
+.pat-edit-profile {
+  margin-right: 0;
+  min-width: 132px;
+  border: none;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 10px;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.pat-edit-profile:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+}
+.pat-edit-profile:disabled { 
+  opacity: 0.5; 
+  cursor: not-allowed;
+  background: #9ca3af;
+}
+
+.pat-info {
+  padding: 8px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 8px;
+}
+.pat-info:last-child {
+  border-bottom: none;
+}
+
+.pat-note {
   background: white;
-  border: 1px solid #1f2937;
-  border-radius: 12px;
-  padding: 16px;
+  border: none;
+  border-radius: 16px;
+  padding: 24px;
   grid-area: note;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
-.pd-appointment {
+.pat-note:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.pat-appointment {
   background: white;
-  border: 1px solid #1f2937;
-  border-radius: 12px;
-  padding: 16px;
-  width: 1100px;
+  border: none;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 100%;
   grid-area: appointment;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
-.pd-predict {
-  min-width: 470px;      /* or whatever feels right */
-  max-width: 470px;      /* optional safety cap */
+.pat-appointment:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.pat-predict {
+  min-width: 320px;
+  max-width: 100%;
   box-sizing: border-box;
   background: white;
-  border: 1px solid #1f2937;
+  border: none;
+  border-radius: 16px;
+  padding: 24px;
+  grid-area: predict;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.pat-predict:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.pat-h3 { 
+  margin: 0 0 16px 0;
+  color: #1f2937;
+  font-size: 20px;
+  font-weight: 700;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 8px;
+}
+
+.pat-note-box {
+  max-width: 100%;
   border-radius: 12px;
   padding: 16px;
-  /* margin-bottom: 16px; */
-  grid-area: predict;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  margin: 12px 0;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  transition: transform 0.2s;
+}
+.pat-note-box:hover {
+  transform: scale(1.02);
 }
 
-.pd-h3 { margin: 0 0 10px 0; }
+.pat-text-muted { color: #6b7280; }
+.pat-text-muted-sm { color: white; font-size: 13px; }
 
-.pd-note-box {
-  width: 390px;
-  border-radius: 12px;
-  padding: 12px;
-  background: #0f172a;
-  margin: 10px 0;
-}
-
-.pd-text-muted { color: black; }
-.pd-text-muted-sm { color: white; font-size: 12px; }
-
-.pd-row {
+.pat-row {
   display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.pd-flex-spacer { flex: 1; }
-.pd-flex-1 { flex: 1; }
-
-.pd-strong { color: white; font-weight: 700; }
-.pd-note-title { font-weight: 700; margin-top: 4px; }
-.pd-note-text { margin-top: 6px; }
-
-/* Pills */
-.pd-pill {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 9999px;
-  border: 1px solid #1f2937;
-}
-.pd-pill-muted { background: #111827; color: #9aa4b2; }
-.pd-pill-pos   { background: #083344; color: #34d399; }
-.pd-pill-neg   { background: #3b0a0a; color: #fca5a5; }
-.pd-pill-warn  { background: #3b2f0a; color: #fde68a; }
-
-/* Appointments */
-.pd-appt-item {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
   gap: 12px;
   align-items: center;
-  padding: 10px;
-  border-radius: 10px;
-  background: #0f172a;
-  margin-bottom: 10px;
+}
+
+.pat-flex-spacer { flex: 1; }
+.pat-flex-1 { flex: 1; }
+
+.pat-strong { color: white; font-weight: 700; }
+.pat-note-title { font-weight: 700; margin-top: 4px; color: white; }
+.pat-note-text { margin-top: 8px; color: rgba(255, 255, 255, 0.9); }
+
+/* Pills */
+.pat-pill {
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  border: none;
+  font-weight: 600;
+  transition: transform 0.2s;
+}
+.pat-pill:hover {
+  transform: scale(1.05);
+}
+.pat-pill.pat-pill-muted { 
+  background: #e5e7eb !important;  
+  color: #6b7280 !important; 
+}
+.pat-pill.pat-pill-pos { 
+  background: #d1fae5 !important; 
+  color: #059669 !important; 
+}
+.pat-pill.pat-pill-neg { 
+  background: #fee2e2 !important; 
+  color: #dc2626 !important; 
+}
+.pat-pill.pat-pill-warn { 
+  background: #fef3c7 !important; 
+  color: #d97706 !important; 
+}
+
+/* Appointments */
+.pat-appt-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 16px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.pat-appt-item:hover {
+  transform: translateX(4px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
 }
 
 /* AI PREDICTION */
-.pd-btn {
+.pat-btn {
   min-width: 132px;
-  border: 1px solid #334155;
-  background: #0b1220;
+  border: none;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border-radius: 10px;
-  padding: 8px 12px;
+  padding: 12px 20px;
   cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
-.pd-btn:disabled { opacity: .7; cursor: default; }
+.pat-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+}
+.pat-btn:disabled { 
+  opacity: 0.5; 
+  cursor: not-allowed;
+  background: #9ca3af;
+}
 
-.pd-input {
-  background: rgb(236, 210, 236);
-  border: 1px solid #1f2937;
-  border-radius: 8px;
-  color: white;
-  padding: 8px 10px;
+.pat-input {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  color: #1f2937;
+  padding: 12px 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+  font-size: 14px;
 }
-.pd-grid-2 {
-  color: black;
+.pat-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.pat-grid-2 {
+  color: #1f2937;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 10px;
+  gap: 12px;
+  margin-top: 16px;
+  width: 100%;
 }
 @media (max-width: 720px) {
-  .pd-grid-2 { grid-template-columns: 1fr; }
+  .pat-grid-2 { grid-template-columns: 1fr; }
+}
+
+/* Override for prediction panel to ensure inputs fit */
+.pat-predict .pat-grid-2 {
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.pat-predict .pat-input {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Global improvements */
+* {
+  box-sizing: border-box;
+}
+
+/*=========================================*/
+.pat-page-appointment-only {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 32px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Time Slot Button Styles */
+.pat-time-slot-btn {
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  color: #333;
+}
+.pat-survey-label {
+  width: max-content;
+}
+
+.pat-input[type="date"] {
+  width: 150px;
+  padding: 8px 15px;
+  border: 1px solid #ccc;
+  margin: 10px;
+  background: white;
+  color: #333;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pat-time-slot-btn:hover:not(:disabled) {
+  border-color: #4a90e2;
+  background: #f0f7ff;
+}
+
+.pat-time-slot-btn.selected {
+  border-color: #4a90e2;
+  background: #4a90e2;
+  color: white;
+}
+
+.pat-time-slot-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pat-reason {
+  padding: 9px 15px;
+  border: 2px solid #ccc;
+  margin-left: 7px;
+  background: white;
+  color: #333;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Secondary button for cancel */
+.pat-survey-btn-secondary {
+  flex: 1;
+  padding: 12px 24px;
+  border: 2px solid #ccc;
+  background: white;
+  color: #333;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pat-survey-btn-secondary:hover:not(:disabled) {
+  border-color: #999;
+  background: #f5f5f5;
+}
+
+.pat-survey-btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Make sure primary survey button takes full width when in flex */
+.pat-survey-btn {
+  flex: 1;
+}
+
+/* ===== AI Prediction Panel Styles ===== */
+.pat-predict {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: white;
+  border: none;
+  border-radius: 16px;
+  padding: 20px;
+  grid-area: predict;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+}
+.pat-predict:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Make sure all children respect the container width */
+.pat-predict * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.pat-predict .pat-grid-2 {
+  width: 100%;
+}
+
+.pat-predict .pat-note-box {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.pat-predict .pat-row {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.pat-predict .pat-input {
+  width: 100%;
+  max-width: 100%;
+}
+
+.pat-predict label {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }

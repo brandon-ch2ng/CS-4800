@@ -1,142 +1,240 @@
-/* ---------- Base reset for this component only ---------- */
-.survey, .survey * , .survey *::before, .survey *::after {
+/* ---------- Base reset ---------- */
+
+.survey, .survey *, .survey *::before, .survey *::after {
   box-sizing: border-box;
 }
 
-/* ---------- Container ---------- */
-
-h2 {
+/* ---------- Title ---------- */
+.surveyForm h2 {
   color: white;
   text-align: center;
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 700;
+  margin-bottom: 2rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* ---------- Main Container ---------- */
 .survey {
   display: grid;
-  gap: 1rem 1.25rem;
-  grid-template-columns: 1.25fr 1fr 1fr;      /* Gage wider, two side columns */
-  grid-template-areas:
-    "gage yn hl";
-  align-items: start;
-  max-width: 1100px;
-  margin: 2rem auto;
-  padding: 1.25rem;
+  gap: 1.5rem;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-areas: "gage yn hl";
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
+/* ---------- Section Layouts ---------- */
+.gage { 
+  grid-area: gage; 
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 
-/* ---------- Sections ---------- */
-.gage { grid-area: gage; display: grid; gap: .75rem; }
-.yn   { grid-area: yn;   display: grid; gap: .75rem; }
-.hl   { grid-area: hl;   display: grid; gap: .75rem; }
+.yn { 
+  grid-area: yn; 
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 
-/* Two-up inputs inside gage */
+.hl { 
+  grid-area: hl; 
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ---------- Input Labels ---------- */
 .gage label {
-  color: white;
-  font-weight: bold;
-  margin-left: 50px;
-  margin-top: 10px;
-  display: grid;
-  gap: .35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 0.95rem;
 }
 
+/* ---------- Text/Number Inputs ---------- */
 .gage input[type="text"],
 .gage input[type="number"],
 .gage input:not([type]) {
-  padding: .6rem .7rem;
-  border: 1.3px solid #2b2b2b;
-  border-radius: .5rem;
-  background: rgb(241, 240, 240);
-  color: black;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  background: white;
+  color: #1f2937;
+  font-size: 1rem;
+  transition: all 0.2s ease;
   outline: none;
 }
+
 .gage input:focus {
-  border-color: #6aa9ff;
-  box-shadow: 0 0 0 3px rgba(106,169,255,.25);
-}
-/* make age input lined */
-.gage input[type="number"]{
-    margin-left: 25px;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* Fieldset cards */
+.gage input::placeholder {
+  color: #9ca3af;
+}
+
+/* ---------- Fieldsets ---------- */
 .survey fieldset {
-  border: 1px solid #2b2b2b;
-  border-radius: .75rem;
-  padding: .9rem .9rem .75rem;
-  background: rgba(255,255,255,0.02); /* looks fine on light & dark */
-}
-.survey legend {
-  padding: 0 .35rem;
-  font-weight: 600;
-  font-size: .95rem;
-  opacity: .9;
-  margin-bottom: .25rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.25rem;
+  background: #f9fafb;
+  transition: all 0.2s ease;
 }
 
-/* Radio rows */
-.survey label {
-  display: inline-flex;
+.survey fieldset:hover {
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.survey legend {
+  padding: 0 0.75rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #1f2937;
+  background: white;
+  border-radius: 6px;
+}
+
+/* ---------- Radio Buttons ---------- */
+.survey fieldset label {
+  display: flex;
   align-items: center;
-  gap: .5rem;
-  margin-right: 1rem;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  cursor: pointer;
+  color: #4b5563;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.survey fieldset label:hover {
+  color: #667eea;
+}
+
+.survey input[type="radio"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: #667eea;
   cursor: pointer;
 }
-.survey input[type="radio"] {
-  width: 1rem;
-  height: 1rem;
-  accent-color: #4f8cff; /* modern browsers */
-}
 
-/* Save button + messages */
+/* ---------- Save Button ---------- */
 .save {
   grid-column: 1 / -1;
-  justify-self: start;
-  padding: .7rem 1rem;
-  border-radius: .6rem;
-  border: 1px solid #2b2b2b;
-  background: #4f8cff;
-  color: #fff;
-  font-weight: 600;
+  margin-top: 1rem;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 1.05rem;
   cursor: pointer;
-  transition: transform .02s ease, filter .15s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
+
+.save:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.save:active:not(:disabled) {
+  transform: translateY(0);
+}
+
 .save:disabled {
-  filter: grayscale(.3);
-  opacity: .7;
-  cursor: default;
-}
-.save:active { transform: translateY(1px); }
-
-/* reset from login/signup button */
-button:hover{
-    height: auto;
-    width: auto;
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #9ca3af;
+  box-shadow: none;
 }
 
-.survey .error { color: #ff6b6b; margin-top: .5rem; }
-.survey .success { color: #71da8b; margin-top: .5rem; }
+/* ---------- Messages ---------- */
+.survey .error {
+  grid-column: 1 / -1;
+  color: #ef4444;
+  background: #fef2f2;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border-left: 4px solid #ef4444;
+  margin-top: 0.5rem;
+  font-weight: 500;
+}
 
-/* Medium: stack yn/hl vertically on the right */
-/* override when the viewport is 640px wide or less */
+.survey p[style*="lightgreen"] {
+  grid-column: 1 / -1;
+  color: #10b981;
+  background: #f0fdf4;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border-left: 4px solid #10b981;
+  margin-top: 0.5rem;
+  font-weight: 500;
+}
+
+/* ---------- Responsive Design ---------- */
+
+/* Tablet: 2 columns */
 @media (max-width: 1024px) {
   .survey {
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
-      "gage yn"
-      "gage hl";
+      "gage gage"
+      "yn hl";
+    gap: 1.5rem;
   }
 }
 
-/* Small: single column stack */
+/* Mobile: 1 column */
 @media (max-width: 640px) {
+  .surveyForm {
+    padding: 1rem;
+  }
+
+  .surveyForm h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
   .survey {
     grid-template-columns: 1fr;
     grid-template-areas:
       "gage"
       "yn"
       "hl";
-    padding: 1rem;
+    padding: 1.5rem;
+    gap: 1.25rem;
   }
-  .save { width: 100%; justify-self: stretch; text-align: center; }
+
+  .save {
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+/* ---------- Animation ---------- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.survey {
+  animation: fadeIn 0.3s ease;
 }

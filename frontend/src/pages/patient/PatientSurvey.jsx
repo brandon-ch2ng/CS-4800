@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./survey.css";
 
-export default function PatientSurvey({ onDone }) {
+export default function PatientSurvey({ onDone, existingProfile  }) {
   const [form, setForm] = useState({
     gender: "", age: "", fever: "", cough: "", 
     fatigue: "", difficulty_breathing: "",
@@ -14,12 +14,31 @@ export default function PatientSurvey({ onDone }) {
   { label: "Low", value: "low" },
   ];
 
-  const [msg, setMsg] = useState(""); const [err, setErr] = useState("");
+  const [msg, setMsg] = useState(""); 
+  const [err, setErr] = useState("");
   const [saving, setSaving] = useState(false);
-
+  
   const yn = [{label:"Yes", value:"yes"}, {label:"No", value:"no"}];
   const toBool = v => v === "yes" ? true : v === "no" ? false : undefined;
+  const fromBool = v => v === true ? "yes" : v === false ? "no" : "";
 
+  // pre-fill form if editing existing profile 
+  useEffect(() => {
+    // existingProfile = the profile saved
+    if(existingProfile) {
+      setForm({
+        gender: existingProfile.gender || "",
+        age: existingProfile.age || "",
+        fever: fromBool(existingProfile.fever),
+        cough: fromBool(existingProfile.cough),
+        fatigue: fromBool(existingProfile.fatigue),
+        difficulty_breathing: fromBool(existingProfile.difficulty_breathing),
+        blood_pressure: existingProfile.blood_pressure || "",
+        cholesterol_level: existingProfile.cholesterol_level || ""
+      });
+    }
+  }, [existingProfile]);
+  
   async function submit(e) {
     e.preventDefault(); 
     setSaving(true); 
@@ -41,7 +60,10 @@ export default function PatientSurvey({ onDone }) {
     try {
       const res = await fetch("/patients/profile", {
         method: "PUT", //put patient info into db 
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        headers: { 
+        "Content-Type": "application/json", 
+        Authorization: `Bearer ${token}` 
+      },
         body: JSON.stringify(payload),
       });
       const data = await res.json().catch(() => ({}));
@@ -56,7 +78,7 @@ export default function PatientSurvey({ onDone }) {
 
   return (
     <form onSubmit={submit} className="surveyForm">
-      <h2>Quick Health Survey</h2>
+    <h2>Quick Health Survey</h2>
     <div className="survey">
       <div className="gage">
         <label>Gender
@@ -69,7 +91,7 @@ export default function PatientSurvey({ onDone }) {
       </div>
       
       <div className="yn">
-        {["Fever","Cough","Fatigue","Difficulty_Breathing"].map(key => (
+        {["fever","cough","fatigue","difficulty_breathing"].map(key => (
           <fieldset key={key}>
             <legend>{key.replace("_"," ")}</legend>
             {yn.map(opt => (

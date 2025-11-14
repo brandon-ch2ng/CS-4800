@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function AiPredictionPanel() {
+export default function AiPredictionPanel({ classPrefix = "pd" }) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
@@ -46,55 +46,98 @@ export default function AiPredictionPanel() {
     }
   }
 
+  const c = classPrefix; // shorthand
+
   return (
-    <section className="pd-predict">
-      <div className="pd-row" style={{ justifyContent: "space-between" }}>
-        <h3 className="pd-h3">AI Health Assistant</h3>
+    <section className={`${c}-predict`}>
+      <div className={`${c}-row`} style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
+        <h3 className={`${c}-h3`} style={{ margin: 0 }}>AI Health Assistant</h3>
         {/* run prediction when user click button */}
-        <button className="pd-btn" onClick={runPrediction} disabled={loading}>
+        <button className={`${c}-btn`} onClick={runPrediction} disabled={loading}>
           {loading ? "Running…" : "Run Prediction"}
         </button>
       </div>
 
-      {error && <div className="pd-error" style={{ marginTop: 8 }}>{error}</div>}
+      {error && <div className={`${c}-error`} style={{ marginTop: 8 }}>{error}</div>}
 
       {!result && !error && (
-        <div className="pd-text-muted">Run a prediction using your saved profile (or optional overrides).</div>
+        <div className={`${c}-text-muted`} style={{ marginTop: 8 }}>
+          Run a prediction using your saved profile (or optional overrides).
+        </div>
       )}
       
       {/* (Optional) quick override inputs */}
-      <div className="pd-grid-2">
-        <LabeledInput label="Gender" placeholder="Female / Male"
-          value={overrides.gender || ""} onChange={v => setOverrides(s => ({...s, gender: v}))} />
-        <LabeledInput label="Age" placeholder="e.g., 42"
-          value={overrides.age || ""} onChange={v => setOverrides(s => ({...s, age: v}))} />
-        <LabeledInput label="Blood Pressure" placeholder="Low / Normal / High"
-          value={overrides.blood_pressure || ""} onChange={v => setOverrides(s => ({...s, blood_pressure: v}))} />
-        <LabeledInput label="Cholesterol" placeholder="Low / Normal / High"
-          value={overrides.cholesterol_level || ""} onChange={v => setOverrides(s => ({...s, cholesterol_level: v}))} />
-        <LabeledInput label="Fever" placeholder="Yes / No"
-          value={overrides.fever || ""} onChange={v => setOverrides(s => ({...s, fever: v}))} />
-        <LabeledInput label="Cough" placeholder="Yes / No"
-          value={overrides.cough || ""} onChange={v => setOverrides(s => ({...s, cough: v}))} />
-        <LabeledInput label="Fatigue" placeholder="Yes / No"
-          value={overrides.fatigue || ""} onChange={v => setOverrides(s => ({...s, fatigue: v}))} />
-        <LabeledInput label="Difficulty Breathing" placeholder="Yes / No"
-          value={overrides.difficulty_breathing || ""} onChange={v => setOverrides(s => ({...s, difficulty_breathing: v}))} />
+      <div className={`${c}-grid-2`} style={{ marginTop: 12 }}>
+        <LabeledInput 
+          classPrefix={c}
+          label="Gender" 
+          placeholder="Female / Male"
+          value={overrides.gender || ""} 
+          onChange={v => setOverrides(s => ({...s, gender: v}))} 
+        />
+        <LabeledInput 
+          classPrefix={c}
+          label="Age" 
+          placeholder="e.g., 42"
+          value={overrides.age || ""} 
+          onChange={v => setOverrides(s => ({...s, age: v}))} 
+        />
+        <LabeledInput 
+          classPrefix={c}
+          label="Blood Pressure" 
+          placeholder="Low / Normal / High"
+          value={overrides.blood_pressure || ""} 
+          onChange={v => setOverrides(s => ({...s, blood_pressure: v}))} 
+        />
+        <LabeledInput 
+          classPrefix={c}
+          label="Cholesterol" 
+          placeholder="Low / Normal / High"
+          value={overrides.cholesterol_level || ""} 
+          onChange={v => setOverrides(s => ({...s, cholesterol_level: v}))} 
+        />
+        <LabeledInput 
+          classPrefix={c}
+          label="Fever" 
+          placeholder="Yes / No"
+          value={overrides.fever || ""} 
+          onChange={v => setOverrides(s => ({...s, fever: v}))} 
+        />
+        <LabeledInput 
+          classPrefix={c}
+          label="Cough" 
+          placeholder="Yes / No"
+          value={overrides.cough || ""} 
+          onChange={v => setOverrides(s => ({...s, cough: v}))} 
+        />
+        <LabeledInput 
+          classPrefix={c}
+          label="Fatigue" 
+          placeholder="Yes / No"
+          value={overrides.fatigue || ""} 
+          onChange={v => setOverrides(s => ({...s, fatigue: v}))} 
+        />
+        <LabeledInput 
+          classPrefix={c}
+          label="Difficulty Breathing" 
+          placeholder="Yes / No"
+          value={overrides.difficulty_breathing || ""} 
+          onChange={v => setOverrides(s => ({...s, difficulty_breathing: v}))} 
+        />
       </div>
 
-
       {result && (
-        <div className="pd-note-box" style={{ marginTop: 10 }}>
-          <div className="pd-row">
-            <span className="pd-pill pd-pill-muted">PREDICTION</span>
+        <div className={`${c}-note-box`} style={{ marginTop: 12 }}>
+          <div className={`${c}-row`} style={{ flexWrap: "wrap" }}>
+            <span className={`${c}-pill ${c}-pill-muted`}>PREDICTION</span>
             {/* result: 1 = positive, 0 = negative */}
-            <span className={`pd-pill ${result.result?.label ? "pd-pill-pos" : "pd-pill-neg"}`}>
+            <span className={`${c}-pill ${result.result?.label ? `${c}-pill-pos` : `${c}-pill-neg`}`}>
               {result.result?.label ? "POSITIVE" : "NEGATIVE"}
             </span>
-            <div className="pd-flex-spacer" />
-            <span className="pd-strong">{Math.round((result.result?.probability ?? 0) * 100)}%</span>
+            <div className={`${c}-flex-spacer`} />
+            <span className={`${c}-strong`}>{Math.round((result.result?.probability ?? 0) * 100)}%</span>
           </div>
-          <div className="pd-text-muted-sm" style={{ marginTop: 6 }}>
+          <div className={`${c}-text-muted-sm`} style={{ marginTop: 6 }}>
             Saved as prediction_id: {result.prediction_id}
           </div>
         </div>
@@ -116,7 +159,7 @@ function cleanOverrides(o) {
 function LabeledInput({ label, value, onChange, placeholder }) {
   return (
     <label style={{ display: "grid", gap: 6 }}>
-      <span className="pd-text-muted-sm">{label}</span>
+      <span style={{ color: "#000", fontSize: "13px", fontWeight: 600 }}>{label}</span>
       <input
         className="pd-input"
         value={value}
