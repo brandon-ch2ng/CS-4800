@@ -9,6 +9,7 @@ from app.database import init_indexes
 from dotenv import load_dotenv
 from app.routes.disease_routes import disease_bp
 from app.routes.appointment_routes import appointment_bp
+from app.routes.blockchain_routes import blockchain_bp
 import os
 
 
@@ -39,6 +40,7 @@ def create_app():
     app.register_blueprint(prediction_bp, url_prefix="/api")
     app.register_blueprint(disease_bp, url_prefix="/catalog")
     app.register_blueprint(appointment_bp, url_prefix="/appointments")
+    app.register_blueprint(blockchain_bp)
 
     # Create MongoDB indexes on startup
     init_indexes()
