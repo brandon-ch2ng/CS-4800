@@ -73,7 +73,7 @@ class Blockchain:
         """
         genesis_block = Block(
             index=0,
-            timestamp=time.time(),
+            timestamp=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             data={"message": "Genesis Block"},
             previous_hash="0",
         )
@@ -97,7 +97,7 @@ class Blockchain:
         latest = self.get_latest_block()
         new_block = Block(
             index=latest.index + 1,
-            timestamp=time.time(),
+            timestamp=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             data=data,
             previous_hash=latest.hash,
         )

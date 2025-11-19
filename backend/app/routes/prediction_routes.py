@@ -3,6 +3,8 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from app.database import db
 from datetime import datetime
+from app.blockchain import blockchain
+import time
 # from joblib import load  # use when ML dev provides a model file
 
 prediction_bp = Blueprint("prediction", __name__)
@@ -136,10 +138,25 @@ def predict():
     }
     inserted = db.predictions.insert_one(pred_doc)
 
+    # 4.5) Add prediction to blockchain
+    block_data = {
+        "patient_email": email,
+        "prediction_id": str(inserted.inserted_id),
+        "label": label,
+        "probability": float(proba[1]),
+        "created_at": pred_doc["created_at"].isoformat() + "Z",
+    }
+    new_block = blockchain.add_block(block_data)
+
     # 5) Respond
     return jsonify({
         "input_used": encoded,
         "vector_order": FEATURE_ORDER,
         "result": {"label": label, "probability": float(proba[1])},
-        "prediction_id": str(inserted.inserted_id)
+        "prediction_id": str(inserted.inserted_id),
+        "block": {
+            "index": new_block.index,
+            "hash": new_block.hash,
+            "previous_hash": new_block.previous_hash,
+        }
     }), 200
