@@ -1,9 +1,11 @@
 # app/routes/prediction_routes.py
+import pickle
+import os
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from app.database import db
 from datetime import datetime
-# from joblib import load  # use when ML dev provides a model file
+from joblib import load
 
 prediction_bp = Blueprint("prediction", __name__)
 
@@ -29,43 +31,70 @@ def _gender_to_idx(v):
 
 # Explicit model feature order (Adjust later if ML specifies a different order)
 FEATURE_ORDER = [
-    "fever", "cough", "fatigue", "difficulty_breathing",
-    "blood_pressure", "cholesterol_level",
-    "age", "gender"
+    'Age', 'Fever_and_Cough', 'Fever_and_Fatigue', 'Fatigue_and_Cough', 
+    'Fever_and_Fatigue_and_Cough', 'Disease_Frequency', 'Risk_Score', 'Age_Squared', 
+    'Fever_Yes', 'Cough_Yes', 'Fatigue_Yes', 'Difficulty Breathing_Yes', 
+    'Blood Pressure_Low', 'Blood Pressure_Normal', 'Cholesterol Level_Low', 
+    'Cholesterol Level_Normal', 'Gender_Male', 'Age_Group_Adult', 'Age_Group_Elderly'
 ]
 
 def _encode_input(profile: dict) -> dict:
     """
-    Validate + normalize frontend values into numeric features the model expects.
-    Raises ValueError with a clear message if something is wrong.
+    Validate + normalize frontend values into all 19 numeric features the model expects.
     """
     out = {}
 
-    # required booleans (Yes/No or true/false)
+    # required booleans
     for k in ["fever", "cough", "fatigue", "difficulty_breathing"]:
         if k not in profile:
             raise ValueError(f"{k} is required (Yes/No)")
         out[k] = _to_bool01(profile[k])
 
-    # required categories (Low/Normal/High)
+    # required categories
     if "blood_pressure" not in profile:
         raise ValueError("blood_pressure is required (Low/Normal/High)")
-    out["blood_pressure"] = _cat3_to_idx(profile["blood_pressure"], "blood_pressure")
+    bp = _cat3_to_idx(profile["blood_pressure"], "blood_pressure")
 
     if "cholesterol_level" not in profile:
         raise ValueError("cholesterol_level is required (Low/Normal/High)")
-    out["cholesterol_level"] = _cat3_to_idx(profile["cholesterol_level"], "cholesterol_level")
+    chol = _cat3_to_idx(profile["cholesterol_level"], "cholesterol_level")
 
-    # required age (int)
+    # required age
     if "age" not in profile:
         raise ValueError("age is required")
     try:
-        out["age"] = int(profile["age"])
-    except Exception:
+        age = int(profile["age"])
+    except:
         raise ValueError("age must be an integer")
 
-    # optional gender (Male/Female)
-    out["gender"] = _gender_to_idx(profile.get("gender"))
+    # optional gender
+    gender = _gender_to_idx(profile.get("gender", "male"))
+
+    # Now compute all 19 features
+    fever = out["fever"]
+    cough = out["cough"]
+    fatigue = out["fatigue"]
+    difficulty_breathing = out["difficulty_breathing"]
+
+    out["Age"] = age
+    out["Fever_and_Cough"] = fever * cough
+    out["Fever_and_Fatigue"] = fever * fatigue
+    out["Fatigue_and_Cough"] = fatigue * cough
+    out["Fever_and_Fatigue_and_Cough"] = fever * fatigue * cough
+    out["Disease_Frequency"] = fever + cough + fatigue + difficulty_breathing
+    out["Risk_Score"] = (fever * 0.3 + cough * 0.2 + fatigue * 0.2 + difficulty_breathing * 0.3)
+    out["Age_Squared"] = age * age
+    out["Fever_Yes"] = fever
+    out["Cough_Yes"] = cough
+    out["Fatigue_Yes"] = fatigue
+    out["Difficulty Breathing_Yes"] = difficulty_breathing
+    out["Blood Pressure_Low"] = 1 if bp == 0 else 0
+    out["Blood Pressure_Normal"] = 1 if bp == 1 else 0
+    out["Cholesterol Level_Low"] = 1 if chol == 0 else 0
+    out["Cholesterol Level_Normal"] = 1 if chol == 1 else 0
+    out["Gender_Male"] = 1 if gender == 0 else 0
+    out["Age_Group_Adult"] = 1 if 18 <= age < 65 else 0
+    out["Age_Group_Elderly"] = 1 if age >= 65 else 0
 
     return out
 
@@ -73,21 +102,24 @@ def _to_vector(encoded: dict):
     """Return a list in the FEATURE_ORDER ready for model.predict/predict_proba."""
     return [encoded[k] for k in FEATURE_ORDER]
 
-# --------- Model loader. REPLACE THE CODE BELOW WITH REAL ML MODEL. ---------
+# --------- Model loader---------
 
 _model = None
 def get_model():
     global _model
     if _model is None:
-        # Example: replace with actual model
-        # _model = load("model.pkl")
-        class _Dummy:
-            def predict_proba(self, X):
-                # Return [[p0, p1], ...]; fake p1=0.65 for demo
-                return [[0.35, 0.65] for _ in X]
-            def predict(self, X):
-                return [1 for _ in X]
-        _model = _Dummy()
+        model_path = os.path.join(
+            os.path.dirname(__file__),
+            "..", "ml_model", "catboost_model.pkl"
+        )
+        if os.path.exists(model_path):
+            _model = load(model_path)
+            print(f"✓ Model loaded from {model_path}")
+        else:
+            raise FileNotFoundError(
+                f"Model not found at {model_path}. "
+                "Place catboost_model.pkl in backend/app/ml_model/."
+            )
     return _model
 
 # --------- Route: /api/predict ---------
