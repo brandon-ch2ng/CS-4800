@@ -128,6 +128,14 @@ function ChatBot({ classPrefix: c, prediction }) {
   const predictionResult = prediction.result?.label === 1 ? "POSITIVE" : "NEGATIVE";
   const probability = Math.round((prediction.result?.probability ?? 0) * 100);
 
+  // Extract symptoms from features
+  const symptoms = {
+    fever: prediction.result?.input_features?.fever === 1,
+    cough: prediction.result?.input_features?.cough === 1,
+    fatigue: prediction.result?.input_features?.fatigue === 1,
+    difficulty_breathing: prediction.result?.input_features?.difficulty_breathing === 1
+  };
+
   const initialMessage = predictionResult === "POSITIVE"
     ? `We are ${probability}% confident that you may be sick. I'm here to help you understand your results and next steps.`
     : `We are ${100 - probability}% confident that you do not have an illness. Here are some resources and recommendations.`;
@@ -135,6 +143,14 @@ function ChatBot({ classPrefix: c, prediction }) {
   const [messages, setMessages] = useState([
     { role: "bot", text: initialMessage }
   ]);
+  const [showFollowUp, setShowFollowUp] = useState(false);
+
+  const remedyMap = {
+    fever: "For fever: Take over-the-counter fever reducers like acetaminophen or ibuprofen. Stay hydrated and rest in a cool environment.",
+    cough: "For cough: Use cough drops, honey, or OTC cough suppressants. Drink warm tea with honey and lemon. Avoid irritants like smoke.",
+    fatigue: "For fatigue: Ensure adequate rest (7-9 hours sleep). Eat balanced meals with protein and nutrients. Light exercise when feeling better.",
+    difficulty_breathing: "For difficulty breathing: Sit upright, use a humidifier, and breathe steam from a hot shower. If symptoms persist, seek immediate medical attention."
+  };
 
   const qaOptions = [
     {
@@ -144,7 +160,7 @@ function ChatBot({ classPrefix: c, prediction }) {
     {
       question: "What should I do next?",
       answer: predictionResult === "POSITIVE"
-        ? "We recommend scheduling an appointment with your doctor to discuss these results. In the meantime, maintain healthy habits like rest, hydration, and balanced diet."
+        ? "We recommend scheduling an appointment with your doctor to discuss these results. In the meantime, maintain healthy habits like rest and hydration. You can attempt home or over-the-counter remedies to relieve mild symptoms."
         : "Regular check-ups and preventive care are important. If symptoms develop, or you feel unwell, seek medical attention promptly."
     },
     {
@@ -158,11 +174,36 @@ function ChatBot({ classPrefix: c, prediction }) {
   ];
 
   function handleQuestion(qa) {
-    setMessages(prev => [
-      ...prev,
+    const newMessages = [
+      ...messages,
       { role: "user", text: qa.question },
       { role: "bot", text: qa.answer }
-    ]);
+    ];
+    setMessages(newMessages);
+    
+    if (predictionResult === "POSITIVE" && qa.question === "What should I do next?") {
+      setShowFollowUp(true);
+    } else {
+      setShowFollowUp(false);
+    }
+  }
+
+  function handleFollowUp(choice) {
+    if (choice === "remedies") {
+      const selectedRemedies = Object.entries(symptoms)
+        .filter(([_, hasSymptom]) => hasSymptom)
+        .map(([symptom, _]) => remedyMap[symptom])
+        .join("\n\n");
+
+      const remedyAnswer = selectedRemedies || "No specific remedies needed based on your selected symptoms. Always follow OTC package directions and consult your doctor if symptoms worsen.";
+      
+      setMessages(prev => [
+        ...prev,
+        { role: "user", text: "I'd like to discuss home and OTC remedies" },
+        { role: "bot", text: remedyAnswer }
+      ]);
+    }
+    setShowFollowUp(false);
   }
 
   return (
@@ -185,26 +226,63 @@ function ChatBot({ classPrefix: c, prediction }) {
         ))}
       </div>
 
-      <div style={{ display: "grid", gap: 6 }}>
-        {qaOptions.map((qa, idx) => (
+      {showFollowUp ? (
+        <div style={{ display: "grid", gap: 6 }}>
           <button
-            key={idx}
             className={`${c}-btn`}
-            onClick={() => handleQuestion(qa)}
+            onClick={() => handleFollowUp("remedies")}
             style={{
-              textAlign: "left",
+              textAlign: "center",
               padding: "8px 12px",
               fontSize: "13px",
-              backgroundColor: "#f9f9f9",
-              border: "1px solid #ddd",
+              backgroundColor: "#28a745",
+              color: "#fff",
+              border: "none",
               borderRadius: 4,
               cursor: "pointer"
             }}
           >
-            {qa.question}
+            I'd like to discuss home and OTC remedies
           </button>
-        ))}
-      </div>
+          <button
+            className={`${c}-btn`}
+            onClick={() => handleFollowUp("ok")}
+            style={{
+              textAlign: "center",
+              padding: "8px 12px",
+              fontSize: "13px",
+              backgroundColor: "#6c757d",
+              color: "#fff",
+              border: "none",
+              borderRadius: 4,
+              cursor: "pointer"
+            }}
+          >
+            OK
+          </button>
+        </div>
+      ) : (
+        <div style={{ display: "grid", gap: 6 }}>
+          {qaOptions.map((qa, idx) => (
+            <button
+              key={idx}
+              className={`${c}-btn`}
+              onClick={() => handleQuestion(qa)}
+              style={{
+                textAlign: "left",
+                padding: "8px 12px",
+                fontSize: "13px",
+                backgroundColor: "#f9f9f9",
+                border: "1px solid #ddd",
+                borderRadius: 4,
+                cursor: "pointer"
+              }}
+            >
+              {qa.question}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
