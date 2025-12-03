@@ -26,6 +26,7 @@ export default function Login() {
     }
     localStorage.setItem("token", data.token);
     localStorage.setItem("role", data.role);
+    
     nav("/dashboard"); //frontend route NOT backend, render DashboardRouter
   }
 
