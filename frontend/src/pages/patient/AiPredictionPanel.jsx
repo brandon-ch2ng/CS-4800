@@ -135,6 +135,7 @@ function ChatBot({ classPrefix: c, prediction }) {
   const [messages, setMessages] = useState([
     { role: "bot", text: initialMessage }
   ]);
+  const [showFollowUp, setShowFollowUp] = useState(false);
 
   const qaOptions = [
     {
@@ -144,7 +145,7 @@ function ChatBot({ classPrefix: c, prediction }) {
     {
       question: "What should I do next?",
       answer: predictionResult === "POSITIVE"
-        ? "We recommend scheduling an appointment with your doctor to discuss these results. In the meantime, maintain healthy habits like rest, hydration, and balanced diet."
+        ? "We recommend scheduling an appointment with your doctor to discuss these results. In the meantime, maintain healthy habits like rest and hydration. You can attempt home or over-the-counter remedies to relieve mild symptoms."
         : "Regular check-ups and preventive care are important. If symptoms develop, or you feel unwell, seek medical attention promptly."
     },
     {
@@ -158,11 +159,31 @@ function ChatBot({ classPrefix: c, prediction }) {
   ];
 
   function handleQuestion(qa) {
-    setMessages(prev => [
-      ...prev,
+    const newMessages = [
+      ...messages,
       { role: "user", text: qa.question },
       { role: "bot", text: qa.answer }
-    ]);
+    ];
+    setMessages(newMessages);
+    
+    if (predictionResult === "POSITIVE" && qa.question === "What should I do next?") {
+      setShowFollowUp(true);
+    } else {
+      setShowFollowUp(false);
+    }
+  }
+
+  function handleFollowUp(choice) {
+    if (choice === "remedies") {
+      const remedyAnswer = "Common home and OTC remedies include: rest, staying hydrated, gargling with salt water, using saline nasal drops, throat lozenges, and over-the-counter pain relievers like acetaminophen or ibuprofen. Always follow package directions and consult your doctor if symptoms worsen.";
+      
+      setMessages(prev => [
+        ...prev,
+        { role: "user", text: "I'd like to discuss home and OTC remedies" },
+        { role: "bot", text: remedyAnswer }
+      ]);
+    }
+    setShowFollowUp(false);
   }
 
   return (
@@ -185,26 +206,63 @@ function ChatBot({ classPrefix: c, prediction }) {
         ))}
       </div>
 
-      <div style={{ display: "grid", gap: 6 }}>
-        {qaOptions.map((qa, idx) => (
+      {showFollowUp ? (
+        <div style={{ display: "grid", gap: 6 }}>
           <button
-            key={idx}
             className={`${c}-btn`}
-            onClick={() => handleQuestion(qa)}
+            onClick={() => handleFollowUp("remedies")}
             style={{
-              textAlign: "left",
+              textAlign: "center",
               padding: "8px 12px",
               fontSize: "13px",
-              backgroundColor: "#f9f9f9",
-              border: "1px solid #ddd",
+              backgroundColor: "#28a745",
+              color: "#fff",
+              border: "none",
               borderRadius: 4,
               cursor: "pointer"
             }}
           >
-            {qa.question}
+            I'd like to discuss home and OTC remedies
           </button>
-        ))}
-      </div>
+          <button
+            className={`${c}-btn`}
+            onClick={() => handleFollowUp("ok")}
+            style={{
+              textAlign: "center",
+              padding: "8px 12px",
+              fontSize: "13px",
+              backgroundColor: "#6c757d",
+              color: "#fff",
+              border: "none",
+              borderRadius: 4,
+              cursor: "pointer"
+            }}
+          >
+            OK
+          </button>
+        </div>
+      ) : (
+        <div style={{ display: "grid", gap: 6 }}>
+          {qaOptions.map((qa, idx) => (
+            <button
+              key={idx}
+              className={`${c}-btn`}
+              onClick={() => handleQuestion(qa)}
+              style={{
+                textAlign: "left",
+                padding: "8px 12px",
+                fontSize: "13px",
+                backgroundColor: "#f9f9f9",
+                border: "1px solid #ddd",
+                borderRadius: 4,
+                cursor: "pointer"
+              }}
+            >
+              {qa.question}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -33,6 +33,8 @@ cd patient-disease-app/backend
 ```bash
 python -m venv venv
 venv\Scripts\activate
+
+MELIKA ONLY DO NOT PUBLISH & "C:\Users\Melika\AppData\Local\Programs\Python\Python312\python.exe" -m venv venv
 ```
 
 #### macOS/Linux:
