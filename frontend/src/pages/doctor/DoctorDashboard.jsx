@@ -237,7 +237,7 @@ const [profileLoading, setProfileLoading] = useState(false);
     } finally {
       setProfileLoading(false);
     }
-}d
+}
 
   return (
     <div>
