@@ -28,6 +28,9 @@ def init_indexes():
         db.notes.create_index([("patient_email", 1), ("created_at", -1)])
         db.notes.create_index([("prediction_id", 1)])
 
+        # Blockchain database to support persistent log.
+        db.blockchain.create_index([("index", 1)], unique=True)
+
         print("Indexes ensured for 'users', 'patients', 'predictions', and 'notes'.")
     except Exception as e:
         print("Error creating indexes:", e)

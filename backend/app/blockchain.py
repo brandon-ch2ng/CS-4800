@@ -2,6 +2,7 @@ import hashlib
 import json
 import time
 from typing import Any, Dict, List
+from app.database import db
 
 
 class Block:
@@ -14,15 +15,16 @@ class Block:
     def __init__(
         self,
         index: int,
-        timestamp: float,
+        timestamp: str,
         data: Dict[str, Any],
         previous_hash: str,
+        hash_value=None
     ):
         self.index = index
         self.timestamp = timestamp
         self.data = data
         self.previous_hash = previous_hash
-        self.hash = self.calculate_hash()
+        self.hash = hash_value or self.calculate_hash()
 
     def calculate_hash(self) -> str:
         """
@@ -65,7 +67,30 @@ class Blockchain:
 
     def __init__(self):
         self.chain: List[Block] = []
-        self.create_genesis_block()
+        # self.create_genesis_block() included in load_chain
+        self.load_chain()
+
+    def load_chain(self):
+        """
+        Pull blockchain ledger from MongoDB and reconstruct Block objects
+        """
+        docs = list(db.blockchain.find().sort("index", 1))
+
+        if not docs:
+            self.create_genesis_block()
+            return
+        
+        # reconstruct each Block from MongoDB
+        self.chain = []
+        for d in docs:
+            block = Block(index=d["index"], timestamp=d["timestamp"], data=d["data"], previous_hash=d["previous_hash"], hash_value=d["hash"])
+            self.chain.append(block)
+
+    def save_block(self, block: Block):
+        """
+        Save/update a block in MongoDB using its index as the unique identifier
+        """
+        db.blockchain.update_one({"index": block.index}, {"$set": block.to_dict()}, upsert=True)
 
     def create_genesis_block(self) -> None:
         """
@@ -78,6 +103,7 @@ class Blockchain:
             previous_hash="0",
         )
         self.chain.append(genesis_block)
+        self.save_block(genesis_block)
 
     def get_latest_block(self) -> Block:
         return self.chain[-1]
@@ -102,6 +128,7 @@ class Blockchain:
             previous_hash=latest.hash,
         )
         self.chain.append(new_block)
+        self.save_block(new_block)
         return new_block
 
     def is_valid(self) -> bool:
