@@ -102,7 +102,7 @@ def _to_vector(encoded: dict):
     """Return a list in the FEATURE_ORDER ready for model.predict/predict_proba."""
     return [encoded[k] for k in FEATURE_ORDER]
 
-# --------- Model loader---------
+# --------- Model loader----------
 
 _model = None
 def get_model():

@@ -128,14 +128,6 @@ function ChatBot({ classPrefix: c, prediction }) {
   const predictionResult = prediction.result?.label === 1 ? "POSITIVE" : "NEGATIVE";
   const probability = Math.round((prediction.result?.probability ?? 0) * 100);
 
-  // Extract symptoms from features
-  const symptoms = {
-    fever: prediction.result?.input_features?.fever === 1,
-    cough: prediction.result?.input_features?.cough === 1,
-    fatigue: prediction.result?.input_features?.fatigue === 1,
-    difficulty_breathing: prediction.result?.input_features?.difficulty_breathing === 1
-  };
-
   const initialMessage = predictionResult === "POSITIVE"
     ? `We are ${probability}% confident that you may be sick. I'm here to help you understand your results and next steps.`
     : `We are ${100 - probability}% confident that you do not have an illness. Here are some resources and recommendations.`;
@@ -144,13 +136,6 @@ function ChatBot({ classPrefix: c, prediction }) {
     { role: "bot", text: initialMessage }
   ]);
   const [showFollowUp, setShowFollowUp] = useState(false);
-
-  const remedyMap = {
-    fever: "For fever: Take over-the-counter fever reducers like acetaminophen or ibuprofen. Stay hydrated and rest in a cool environment.",
-    cough: "For cough: Use cough drops, honey, or OTC cough suppressants. Drink warm tea with honey and lemon. Avoid irritants like smoke.",
-    fatigue: "For fatigue: Ensure adequate rest (7-9 hours sleep). Eat balanced meals with protein and nutrients. Light exercise when feeling better.",
-    difficulty_breathing: "For difficulty breathing: Sit upright, use a humidifier, and breathe steam from a hot shower. If symptoms persist, seek immediate medical attention."
-  };
 
   const qaOptions = [
     {
@@ -190,12 +175,7 @@ function ChatBot({ classPrefix: c, prediction }) {
 
   function handleFollowUp(choice) {
     if (choice === "remedies") {
-      const selectedRemedies = Object.entries(symptoms)
-        .filter(([_, hasSymptom]) => hasSymptom)
-        .map(([symptom, _]) => remedyMap[symptom])
-        .join("\n\n");
-
-      const remedyAnswer = selectedRemedies || "No specific remedies needed based on your selected symptoms. Always follow OTC package directions and consult your doctor if symptoms worsen.";
+      const remedyAnswer = "Common home and OTC remedies include: rest, staying hydrated, gargling with salt water, using saline nasal drops, throat lozenges, and over-the-counter pain relievers like acetaminophen or ibuprofen. Always follow package directions and consult your doctor if symptoms worsen.";
       
       setMessages(prev => [
         ...prev,
