@@ -54,7 +54,7 @@ export default function AiPredictionPanel({ classPrefix = "pd" }) {
 
       {!result && !error && (
         <div className={`${c}-text-muted`} style={{ marginTop: 8 }}>
-          Run a prediction using your saved profile (or optional overrides).
+          Run a prediction using your saved profile (or optional overrides below).
         </div>
       )}
       

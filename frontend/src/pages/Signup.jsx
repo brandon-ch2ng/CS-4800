@@ -14,11 +14,23 @@ function validatePassword(pw) {
 export default function Signup() {
   const [error, setError] = useState("");
   const [confirmMsg, setConfirmMsg] = useState("");
+  const [passwordErrors, setPasswordErrors] = useState([]); // Track password errors
   const nav = useNavigate();
 
+  // Check password in real-time
+  function onPasswordChange(e) {
+    const pw = e.target.value;
+    if (pw) {
+      const errs = validatePassword(pw);
+      setPasswordErrors(errs);
+    } else {
+      setPasswordErrors([]);
+    }
+  }
   async function onSubmit(e) {
     e.preventDefault();
     setError("");
+    setConfirmMsg("");
     const f = e.currentTarget;
     console.log("Form submitted"); // Debug: Check if this logs
     if (!f.reportValidity()) {
@@ -79,6 +91,9 @@ export default function Signup() {
     <div className="formSignup">
       <h1>Create Account</h1>
 
+      {/* display general error msg */}
+      {error && <div className="error-message" style={{color: 'red', marginBottom: '1rem'}}>{error}</div>}
+
       <form id="signup" onSubmit={onSubmit}>
         <div className="email">
           <label htmlFor="email">Email:</label>
@@ -124,7 +139,14 @@ export default function Signup() {
             autoComplete="new-password"
             minLength="8"
             required
+            onChange={onPasswordChange}
           />
+          {/* Only show if there are password errors */}
+          {passwordErrors.length > 0 && (
+            <small style={{display: 'block', color: 'red', marginTop: '0.25rem'}}>
+              Password needs: {passwordErrors.join(", ")}
+            </small>
+          )}
         </div>
 
         <div>
@@ -138,25 +160,13 @@ export default function Signup() {
             required
             onChange={onConfirmChange}
           />
+          {/* Display password mismatch message */}
+          {confirmMsg && <div style={{color: 'red', fontSize: '0.9rem', marginTop: '0.25rem'}}>{confirmMsg}</div>}
           
         </div>
 
         <fieldset className="additionalInfo">
           <legend>Additional info</legend>
-
-          {/* <div className="field">
-            <label htmlFor="gender">Gender</label>
-            <select id="gender" name="gender" required defaultValue="">
-              <option value="" disabled>Choose…</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
-          </div>
-
-          <div className="field">
-            <label htmlFor="age">Age</label>
-            <input type="number" id="age" name="age" min="0" max="120" step="1" inputMode="numeric" required />
-          </div> */}
 
           <div className="field">
             <label htmlFor="role">Role</label>

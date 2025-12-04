@@ -7,13 +7,13 @@ import "./dashboard.css";
 export default function PatientDashboard() {
   const [welcome, setWelcome] = useState(""); //create by useState
   const [profile, setProfile] = useState(null);
-  const [doctorNotes, setDoctorNotes] = useState([]);// NEW: doctor note 
-  const [predictions, setPredictions] = useState([]);// NEW: prediction 
-  const [appts, setAppts] = useState([]);        // NEW: appointments 
+  const [doctorNotes, setDoctorNotes] = useState([]);// doctor note 
+  const [predictions, setPredictions] = useState([]);// prediction 
+  const [appts, setAppts] = useState([]);        // appointments 
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);  // NEW: simple spinner
+  const [loading, setLoading] = useState(true);  // simple spinner
   const [showSurvey, setShowSurvey] = useState(true);
-  const [editMode, setEditMode] = useState(false); // NEW: edit mode state
+  const [editMode, setEditMode] = useState(false); // edit mode state
   const [showBooking, setShowBooking] = useState(false); // booking mode
 
   //helper function to call API to backend
@@ -96,7 +96,7 @@ export default function PatientDashboard() {
 
       /// appointments - use /appointments/mine endpoint
       try {
-        const r4 = await apiGet("/appointments/mine"); // /mine: PATIENT: My Request
+        const r4 = await apiGet("/appointments/mine"); // mine: PATIENT: My Request
         const d4 = await r4.json().catch(() => ({}));
         setAppts(Array.isArray(d4.items) ? d4.items : []);
       } catch {
@@ -144,13 +144,18 @@ export default function PatientDashboard() {
     setShowBooking(false); // exit
   }
 
+  function handleLogout() {
+    localStorage.clear(); // Clear token and any other stored data
+    window.location.assign("/"); // Redirect to login page
+  }
+
+
 
 return (
     <div> 
       {loading && <div className="pat-loading">Loading…</div>}
       {error && <div className="pat-error">{error}</div>}
-      {welcome && <h2 className="pat-welcome">{welcome}</h2>}
-
+ 
       {showBooking ? (
         <AppointmentBooking 
           onCancel={cancelBooking}
@@ -166,6 +171,16 @@ return (
           </div>
         </div>
       ) : (
+         <> 
+         <div className="pat-wel-log">
+          {welcome && <h2 className="pat-welcome">{welcome}</h2>}
+          <button 
+            className="pat-logout-btn" 
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </div>
         <div className="pat-page">
           {profile && (
             <>
@@ -241,6 +256,7 @@ return (
             </>
           )}
         </div>
+        </>
       )}
     </div>
   );
