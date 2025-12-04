@@ -4,8 +4,6 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding: 32px 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 /* ===== Main page grid ===== */
@@ -20,9 +18,46 @@
     "profile predict"
     "note predict"
     "appointment appointment";
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+  /* backdrop-filter: blur(10px); */
   min-height: 100vh;
 }
+
+/* Logout button */
+.pat-wel-log {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 32px 24px 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.pat-welcome {
+  margin: 0;
+}
+
+.pat-logout-btn {
+  margin-top: 50px;
+  position: absolute;
+  right: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  padding: 10px 24px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.pat-logout-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
 
 /* Stack on small screens */
 @media (max-width: 900px){
@@ -246,11 +281,60 @@
   box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
 }
 
+/* APPOINTMENT PAGE */
+.survey-background {
+  background: white;
+  border-radius: 20px;
+  min-height: 90vh;
+  padding: 40px;
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05);
+  border-top: 4px solid #667eea;
+  position: relative;
+}
+
+.survey-container {
+  color: white;
+  font-weight: bold;
+}
+
+.survey-question .survey-label {
+  color: black;
+}
+
+.survey-input[type="date"] {
+  margin-top: 10px;
+  width: 160px;
+  height: 35px;
+  border-radius: 10px;
+  border: 1px solid grey;
+}
+
+.time-slot-btn {
+  /* similar to pat-btn (the 'prediction' button) */
+  /* but diff color */
+  background: linear-gradient(135deg, #8ea0f1 0%, #8c6daa 100%);
+}
+
+.time-slot-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  background: rgb(167, 175, 233);
+}
+
+.time-slot-btn.selected {
+  border-color: #38f9d7;
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(67, 233, 123, 0.4);
+  transform: scale(1.05);
+}
+
 /* AI PREDICTION */
-.pat-btn {
+.pat-btn, .time-slot-btn,.survey-btn-secondary, .survey-btn {
   min-width: 132px;
   border: none;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border-radius: 10px;
   padding: 12px 20px;
@@ -258,6 +342,10 @@
   font-weight: 600;
   transition: transform 0.2s, box-shadow 0.2s;
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.pat-btn, .survey-btn-secondary, .survey-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 .pat-btn:hover:not(:disabled) {
   transform: translateY(-2px);
@@ -461,3 +549,4 @@
   max-width: 100%;
   min-width: 0;
 }
+

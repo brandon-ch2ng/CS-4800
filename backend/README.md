@@ -11,7 +11,7 @@ This is the backend server for the Patient Disease Prediction app. It is built u
 
 ## Prerequisites
 
-- Python 3.10+ installed
+- Python 3.12 installed
 - MongoDB Atlas account or local MongoDB instance
 - Virtual environment recommended
 
@@ -30,7 +30,8 @@ cd patient-disease-app/backend
 
 #### Windows:
 
-```bash
+```
+bash
 python -m venv venv
 venv\Scripts\activate
 ```
