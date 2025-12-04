@@ -118,6 +118,44 @@ def list_notes_for_prediction(prediction_id):
     return jsonify({"notes": notes}), 200
 
 
+# delete a note
+@doctor_bp.route("/notes/<note_id>", methods=["DELETE"])
+@jwt_required() #Any attempt to access that route without a valid JWT in the request will be blocked
+def delete_note(note_id):
+    """Delete a note by ID. Only the doctor who created it can delete it."""
+    claims = get_jwt()
+    if claims.get("role") != "doctor":
+        return jsonify({"error": "Access denied"}), 403
+    
+    doctor_email = get_jwt_identity()
+
+    try:
+        note_object_id = ObjectId(note_id)
+    except Exception:
+        return jsonify({"error": "Invalid note ID"}), 400
+
+    # Find the note
+    note = db.notes.find_one({"_id": note_object_id})
+
+    if not note:
+        return jsonify({"error": "Note not found"}), 404
+
+    # Check if doctor owns/wrote this note
+    if note.get("doctor_email") != doctor_email:
+        return jsonify({"error": "You can only delete your own notes"}), 403
+
+    # Delete the note
+    result = db.notes.delete_one({"_id": note_object_id})
+
+    if result.deleted_count == 0:
+        return jsonify({"error": "Failed to delete note"}), 500
+    
+    return jsonify({
+        "message": "Note deleted successfully",
+        "deleted_id": note_id
+    }), 200
+
+
 # -------------------------
 # DOCTOR: list my patients
 # -------------------------
