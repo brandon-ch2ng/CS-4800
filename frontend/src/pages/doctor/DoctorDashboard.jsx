@@ -250,9 +250,56 @@ export default function DoctorDashboard() {
     }
   }
 
+  // 6) Delete a note
+  async function deleteNote(noteId){
+    try{
+      setError("");
+      const token = localStorage.getItem("token");
+
+      const res =  await fetch(`/doctors/notes/${encodeURIComponent(noteId)}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if(res.status === 401){ //lacked valid authentication credentials
+        localStorage.clear();
+        window.location.assign("/");
+        throw new Error("Unauthorized");
+      }
+
+      const data = await res.json().catch(() => ({}));
+
+      if(!res.ok) {
+        throw new Error(data.error || `HTTP ${res.status}`);
+      }
+
+      // Refresh notes after successful deletion
+      await loadPatientNotes();
+    }
+    catch (e) {
+      setError(String(e.message || e));
+    }
+  }
+
+  function handleLogout() {
+    localStorage.clear(); // Clear token and any other stored data
+    window.location.assign("/"); // Redirect to login page
+  }
+
   return (
     <div>
-      <h2 className="welcome">Welcome Doctor</h2>
+      <div className="pat-wel-log">
+        <h2 className="welcome">Welcome Doctor</h2>
+        <button 
+            className="pat-logout-btn" 
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+      </div>
+
       <div className="pd-page">
         {loading && <div className="pd-loading">Loading…</div>}
         {error && <div className="pd-error">{error}</div>}
@@ -496,10 +543,42 @@ export default function DoctorDashboard() {
                   </span>
                 )}
                 <div className="pd-flex-spacer" />
-                <span className="pd-text-muted-sm" style={{ color: "white" }}>
-                  {n.doctor_email}
-                </span>
+
+                <div className="pd-trash-email">
+                  <span className="pd-text-muted-sm" style={{ color: "white" }}>
+                    {n.doctor_email}
+                  </span>
+                  {/* Trash Icon Button */}
+                  <button
+                    className="pd-delete-btn"
+                    onClick={() => deleteNote(n._id)}
+                    title="Delete note"
+                    aria-label="Delete note"
+                  >
+                    {/* trash emoji */}
+                    <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M3 6h18" />
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                    <line x1="10" x2="10" y1="11" y2="17" />
+                    <line x1="14" x2="14" y1="11" y2="17" />
+                  </svg>
+
+                  </button>
+                </div>
+
               </div>
+
               <div
                 className="pd-note-text"
                 style={{ color: "white", marginTop: 6 }}
