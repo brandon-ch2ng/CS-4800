@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import AppointmentBooking from '../../../pages/patient/AppointmentBooking.jsx';
+import AppointmentBooking from '../../../pages/patient/AppointmentBooking';
 
 describe('AppointmentBooking Component', () => {
   const mockOnCancel = vi.fn();

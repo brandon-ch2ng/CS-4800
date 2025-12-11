@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import ProtectedRoute from '../../auth/ProtectedRoute.jsx';
+import ProtectedRoute from '../../auth/ProtectedRoute';
 
 const mockNavigate = vi.fn();
 

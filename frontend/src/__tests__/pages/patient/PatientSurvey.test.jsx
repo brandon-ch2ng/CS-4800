@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import PatientSurvey from '../../../pages/patient/PatientSurvey.jsx';
+import PatientSurvey from '../../../pages/patient/PatientSurvey';
 import { mockPatientProfile } from '../../../test-utils';
 
 describe('PatientSurvey Component', () => {

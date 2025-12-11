@@ -19,10 +19,10 @@ export default function Signup() {
   async function onSubmit(e) {
     e.preventDefault();
     setError("");
+    setConfirmMsg("");
     const f = e.currentTarget;
-    console.log("Form submitted"); // Debug: Check if this logs
+    
     if (!f.reportValidity()) {
-      console.log("Form invalid"); // Debug: Check validation
       setError("Please fill all required fields correctly.");
       return;
     }
@@ -33,9 +33,7 @@ export default function Signup() {
       last_name: f.last_name.value,
       password: f.password.value,
       role: f.role.value,
-      //gender
     };
-    console.log("Payload:", payload); // Debug: Check data
 
     const pwErrs = validatePassword(payload.password);
     if (pwErrs.length) {
@@ -54,32 +52,34 @@ export default function Signup() {
         body: JSON.stringify(payload),
       });
       const data = await response.json();
-      console.log("Response:", data); // Debug: Check API response
       if (!response.ok) {
         setError(data.error || `Signup failed (${response.status})`);
         return;
       }
-      nav("/"); // back to login
+      nav("/");
     } catch (error) {
-      console.error("Network error:", error); // Debug: Check for fetch issues
       setError("Network error: " + error.message);
     }
   }
 
   function onConfirmChange(e) {
-    const f = e.currentTarget.form;
-    setConfirmMsg(
-      f.password.value && e.target.value !== f.password.value
-        ? "Passwords do not match."
-        : ""
-    );
-  }
+  const passwordField = document.getElementById('password');
+  if (!passwordField) return;
+  
+  setConfirmMsg(
+    passwordField.value && e.target.value !== passwordField.value
+      ? "Passwords do not match."
+      : ""
+  );
+}
 
   return (
     <div className="formSignup">
       <h1>Create Account</h1>
 
       <form id="signup" onSubmit={onSubmit}>
+        {error && <div className="error-message" style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
+        
         <div className="email">
           <label htmlFor="email">Email:</label>
           <input
@@ -88,8 +88,7 @@ export default function Signup() {
             name="email"
             autoComplete="email"
             required
-          />{" "}
-          {/* Changed to type="email" for better validation */}
+          />
         </div>
 
         <div className="name-pair">
@@ -138,25 +137,11 @@ export default function Signup() {
             required
             onChange={onConfirmChange}
           />
-          
+          {confirmMsg && <div className="confirm-message" style={{ color: 'red', fontSize: '0.9rem', marginTop: '0.25rem' }}>{confirmMsg}</div>}
         </div>
 
         <fieldset className="additionalInfo">
           <legend>Additional info</legend>
-
-          {/* <div className="field">
-            <label htmlFor="gender">Gender</label>
-            <select id="gender" name="gender" required defaultValue="">
-              <option value="" disabled>Choose…</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
-          </div>
-
-          <div className="field">
-            <label htmlFor="age">Age</label>
-            <input type="number" id="age" name="age" min="0" max="120" step="1" inputMode="numeric" required />
-          </div> */}
 
           <div className="field">
             <label htmlFor="role">Role</label>
@@ -178,7 +163,7 @@ export default function Signup() {
 
         <div className="existingUser">
           <p>
-            Already have an account? <a href="index.html">Sign in</a>
+            Already have an account? <Link to="/">Sign in</Link>
           </p>
         </div>
       </form>

@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
-import PatientDashboard from '../../../pages/patient/PatientDashboard.jsx';
+import PatientDashboard from '../../../pages/patient/PatientDashboard';
 
 describe('PatientDashboard Component', () => {
   beforeEach(() => {
