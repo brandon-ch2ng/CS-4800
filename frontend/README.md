@@ -5,7 +5,7 @@
 Before running the application, move into the frontend folder:
 
 ```bash
-cd frontend
+cd patient-disease-app/frontend
 ```
 
 ### 2. Install Dependencies
