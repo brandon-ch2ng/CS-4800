@@ -26,10 +26,12 @@ Something similar to Local: http://localhost:5173/ should appear.
 Either create a new account, or use one of the following test accounts:
 #### Patient Account
 Email: hanah0201@gmail.com
+
 Password: Hannah123
 
 #### Doctor Account
 Email: parker@gmail.com
+
 Password: Parker1234
 
 # React + Vite
