@@ -30,10 +30,14 @@ cd patient-disease-app/backend
 
 #### Windows:
 
-```
-bash
+```bash
 python -m venv venv
 venv\Scripts\activate
+```
+
+If this command gets blocked, run the following command:
+```
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
 
 #### macOS/Linux:
@@ -51,7 +55,7 @@ pip install -r requirements.txt
 
 ### 4. Configure environment variables
 
-Create a .env file in the backend/ folder with the following variables:
+Create file named .env in the backend/ folder with the following variables:
 
 ```bash
 MONGO_URI=<your-mongodb-atlas-uri>
