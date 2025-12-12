@@ -1,20 +1,36 @@
-# Run frontend
-    frontend: npm install
-              npm run dev
-            //should appear something like: 
-            Local:   http://localhost:5173/
-    in login page try:
-        --Patient--
-        email: hanah0201@gmail.com
-        pass: Hannah123
+# Patient Disease Prediction Frontend
+## Frontend Setup & Access
 
-        --Doctor--
-        email: parker@gmail.com
-        pass: Parker1234
-    this should forward into home page 
+### 1. Navigate to the Frontend Directory
+Before running the application, move into the frontend folder:
 
+```bash
+cd frontend
+```
 
+### 2. Install Dependencies
 
+```bash
+npm install
+```
+
+### 3. Start the Development Server
+
+```bash
+npm run dev
+```
+Something similar to Local: http://localhost:5173/ should appear.
+
+### 4. Access Dashboard
+
+Either create a new account, or use one of the following test accounts:
+#### Patient Account
+Email: hanah0201@gmail.com
+Password: Hannah123
+
+#### Doctor Account
+Email: parker@gmail.com
+Password: Parker1234
 
 # React + Vite
 
