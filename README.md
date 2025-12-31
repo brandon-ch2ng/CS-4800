@@ -45,11 +45,10 @@ The **Patient Disease Prediction App** is an AI-powered healthcare platform desi
 
 ## Technologies Used
 
-* **Frontend:** React, TailwindCSS (or specify if different)
-* **Backend:** Node.js / Express (modify based on your project)
-* **AI Model:** Python/Scikit-learn/TensorFlow (or your actual stack)
-* **Database:** MongoDB / PostgreSQL
-* **Blockchain:** Solidity / Ethereum / Hyperledger / Web3 integration (specify accordingly)
+* **Frontend:** React, TailwindCSS 
+* **Backend:** Node.js / Express 
+* **AI Model:** Python/Scikit-learn/TensorFlow 
+* **Database:** MongoDB
 
 ---
 
